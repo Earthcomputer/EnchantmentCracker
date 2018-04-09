@@ -1,0 +1,11 @@
+java/.classpath
+java/.project
+java/enchcracker.dll
+java/enchcracker.log
+java/.settings/
+java/bin/
+native/.cproject
+native/.project
+native/.settings/
+native/Debug/
+native/Release/
