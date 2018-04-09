@@ -588,7 +588,7 @@ public class EnchCrackerWindow extends JFrame {
 		panel_10.add(panel_14);
 
 		JLabel lblEnchantment = new JLabel("Enchantment:");
-		lblEnchantment.setToolTipText("The enchantment ID (see the wiki) followed by the level.");
+		lblEnchantment.setToolTipText("The enchantment ID (see the wiki) followed optionally by the level.");
 		panel_14.add(lblEnchantment);
 
 		enchantmentTextField = new JTextField();
