@@ -153,7 +153,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblNumberOfBookshelves.setToolTipText("The number of bookshelves exposed to the enchanting table");
 		panel.add(lblNumberOfBookshelves);
 
-		bookshelvesTextField = new JTextField();
+		bookshelvesTextField = new FixedTextField();
 		panel.add(bookshelvesTextField);
 		bookshelvesTextField.setColumns(10);
 
@@ -164,7 +164,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblSlot.setToolTipText("The number on the right of the top slot");
 		panel_1.add(lblSlot);
 
-		slot1TextField = new JTextField();
+		slot1TextField = new FixedTextField();
 		panel_1.add(slot1TextField);
 		slot1TextField.setColumns(10);
 
@@ -175,7 +175,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblSlot_1.setToolTipText("The number on the right of the middle slot");
 		panel_2.add(lblSlot_1);
 
-		slot2TextField = new JTextField();
+		slot2TextField = new FixedTextField();
 		panel_2.add(slot2TextField);
 		slot2TextField.setColumns(10);
 
@@ -186,7 +186,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblSlot_2.setToolTipText("The number on the right of the bottom slot");
 		panel_3.add(lblSlot_2);
 
-		slot3TextField = new JTextField();
+		slot3TextField = new FixedTextField();
 		panel_3.add(slot3TextField);
 		slot3TextField.setColumns(10);
 
@@ -340,7 +340,7 @@ public class EnchCrackerWindow extends JFrame {
 		panel_5.add(panel_17);
 		panel_17.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		xpSeedOutput = new JTextField("XP seed: unknown");
+		xpSeedOutput = new FixedTextField("XP seed: unknown");
 		xpSeedOutput.setFont(new Font("Dialog", Font.BOLD, 12));
 		xpSeedOutput.setEditable(false);
 		xpSeedOutput.setBackground(null);
@@ -359,7 +359,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblXpSeed.setToolTipText("The first consecutive XP seed");
 		panel_8.add(lblXpSeed);
 
-		xpSeed1TextField = new JTextField();
+		xpSeed1TextField = new FixedTextField();
 		panel_8.add(xpSeed1TextField);
 		xpSeed1TextField.setColumns(10);
 
@@ -370,7 +370,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblXpSeed_1.setToolTipText("The second consecutive XP seed");
 		panel_9.add(lblXpSeed_1);
 
-		xpSeed2TextField = new JTextField();
+		xpSeed2TextField = new FixedTextField();
 		panel_9.add(xpSeed2TextField);
 		xpSeed2TextField.setColumns(10);
 
@@ -433,7 +433,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblForcePlayerSeed.setToolTipText("Only use this if you (for some reason) already know the player seed");
 		panel_15.add(lblForcePlayerSeed);
 
-		forcePlayerSeedTextField = new JTextField();
+		forcePlayerSeedTextField = new FixedTextField();
 		panel_15.add(forcePlayerSeedTextField);
 		forcePlayerSeedTextField.setColumns(10);
 		btnCalculate.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -454,7 +454,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblItem.setToolTipText("The item you want to enchant");
 		panel_11.add(lblItem);
 
-		itemTextField = new JTextField();
+		itemTextField = new FixedTextField();
 		panel_11.add(itemTextField);
 		itemTextField.setColumns(10);
 
@@ -601,7 +601,7 @@ public class EnchCrackerWindow extends JFrame {
 		lblEnchantment.setToolTipText("The enchantment ID (see the wiki) followed optionally by the level.");
 		panel_14.add(lblEnchantment);
 
-		enchantmentTextField = new JTextField();
+		enchantmentTextField = new FixedTextField();
 		enchantmentTextField.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_14.add(enchantmentTextField);
 		enchantmentTextField.setColumns(10);
