@@ -8,13 +8,12 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.IllegalComponentStateException;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
@@ -35,7 +34,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.text.BadLocationException;
 
 @SuppressWarnings("all")
 /**
@@ -342,20 +340,7 @@ public class EnchCrackerWindow extends JFrame {
 		panel_5.add(panel_17);
 		panel_17.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		xpSeedOutput = new JTextField("XP seed: unknown") {
-			@Deprecated
-			@Override
-			public Rectangle modelToView(int pos) throws BadLocationException {
-				// Hack-fix for #9 - Enchantment Cracker sometimes crashes if you go from second tab to first tab
-				// We have to hack-fix because it's a Java bug (JDK-8179665)
-				try {
-					getLocationOnScreen();
-				} catch (IllegalComponentStateException e) {
-					throw new BadLocationException(null, 0);
-				}
-				return super.modelToView(pos);
-			}
-		};
+		xpSeedOutput = new JTextField("XP seed: unknown");
 		xpSeedOutput.setFont(new Font("Dialog", Font.BOLD, 12));
 		xpSeedOutput.setEditable(false);
 		xpSeedOutput.setBackground(null);
