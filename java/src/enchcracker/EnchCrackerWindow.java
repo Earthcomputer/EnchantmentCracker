@@ -65,6 +65,8 @@ public class EnchCrackerWindow extends JFrame {
 	private DefaultListModel<Enchantments.EnchantmentInstance> unwantedListModel;
 	private JTextField forcePlayerSeedTextField;
 
+	private static AbstractSingleSeedCracker singleSeedCracker;
+
 	/**
 	 * Launch the application.
 	 */
@@ -101,18 +103,26 @@ public class EnchCrackerWindow extends JFrame {
 		// Close the file logger after program has ended
 		Runtime.getRuntime().addShutdownHook(new Thread(Log::cleanupLogging));
 
-		if (NativeSingleSeedCracker.initCracker()) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						EnchCrackerWindow frame = new EnchCrackerWindow();
-						frame.setVisible(true);
-					} catch (Exception e) {
-						Log.fatal("Exception creating frame", e);
-					}
-				}
-			});
+		// Initialize seed cracker
+		singleSeedCracker = new NativeSingleSeedCracker();
+		if (!singleSeedCracker.initCracker()) {
+			singleSeedCracker = new JavaSingleSeedCracker();
+			if (!singleSeedCracker.initCracker()) {
+				return;
+			}
 		}
+
+		// Start program
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					EnchCrackerWindow frame = new EnchCrackerWindow();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					Log.fatal("Exception creating frame", e);
+				}
+			}
+		});
 	}
 
 	/**
@@ -217,52 +227,52 @@ public class EnchCrackerWindow extends JFrame {
 
 				Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
 
-				NativeSingleSeedCracker.abortAndThen(() -> {
+				singleSeedCracker.abortAndThen(() -> {
 					// First time is different because otherwise we have to store all 2^32 initial seeds
-					boolean firstTime = NativeSingleSeedCracker.isFirstTime();
-					NativeSingleSeedCracker.setFirstTime(false);
+					boolean firstTime = singleSeedCracker.isFirstTime();
+					singleSeedCracker.setFirstTime(false);
 
 					// Start brute-forcing thread
 					Thread thread;
 					if (firstTime) {
 						thread = new Thread(() -> {
-							NativeSingleSeedCracker.firstInput(bookshelves, slot1, slot2, slot3);
-							int possibleSeeds = NativeSingleSeedCracker.getPossibleSeeds();
+							singleSeedCracker.firstInput(bookshelves, slot1, slot2, slot3);
+							int possibleSeeds = singleSeedCracker.getPossibleSeeds();
 							Log.info("Reduced possible seeds to " + possibleSeeds);
 							switch (possibleSeeds) {
 							case 0:
 								xpSeedOutput.setText("No possible seeds");
 								break;
 							case 1:
-								xpSeedOutput.setText(String.format("XP seed: %08X", NativeSingleSeedCracker.getSeed()));
+								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
 								break;
 							default:
-								xpSeedOutput.setText("Possible seeds: " + NativeSingleSeedCracker.getPossibleSeeds());
+								xpSeedOutput.setText("Possible seeds: " + possibleSeeds);
 								break;
 							}
-							NativeSingleSeedCracker.setRunning(false);
+							singleSeedCracker.setRunning(false);
 						});
 					} else {
 						thread = new Thread(() -> {
-							NativeSingleSeedCracker.addInput(bookshelves, slot1, slot2, slot3);
-							int possibleSeeds = NativeSingleSeedCracker.getPossibleSeeds();
+							singleSeedCracker.addInput(bookshelves, slot1, slot2, slot3);
+							int possibleSeeds = singleSeedCracker.getPossibleSeeds();
 							Log.info("Reduced possible seeds to " + possibleSeeds);
 							switch (possibleSeeds) {
 							case 0:
 								xpSeedOutput.setText("No possible seeds");
 								break;
 							case 1:
-								xpSeedOutput.setText(String.format("XP seed: %08X", NativeSingleSeedCracker.getSeed()));
+								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
 								break;
 							default:
-								xpSeedOutput.setText("Possible seeds: " + NativeSingleSeedCracker.getPossibleSeeds());
+								xpSeedOutput.setText("Possible seeds: " + possibleSeeds);
 								break;
 							}
-							NativeSingleSeedCracker.setRunning(false);
+							singleSeedCracker.setRunning(false);
 						});
 					}
 					thread.setDaemon(true);
-					NativeSingleSeedCracker.setRunning(true);
+					singleSeedCracker.setRunning(true);
 					thread.start();
 
 					// Start progress bar thread
@@ -270,8 +280,8 @@ public class EnchCrackerWindow extends JFrame {
 						progressBar.setMaximum(1 << 16);
 						progressBar.setStringPainted(true);
 						thread = new Thread(() -> {
-							while (NativeSingleSeedCracker.isRunning()) {
-								long seedsSearched = NativeSingleSeedCracker.getSeedsSearched();
+							while (singleSeedCracker.isRunning()) {
+								long seedsSearched = singleSeedCracker.getSeedsSearched();
 								progressBar.setValue((int) (seedsSearched >>> 16));
 								progressBar.setString("Seeds searched: " + seedsSearched + " / 4294967296");
 								try {
@@ -285,11 +295,11 @@ public class EnchCrackerWindow extends JFrame {
 						});
 					} else {
 						progressBar.setValue(0);
-						progressBar.setMaximum(NativeSingleSeedCracker.getPossibleSeeds());
+						progressBar.setMaximum(singleSeedCracker.getPossibleSeeds());
 						progressBar.setStringPainted(true);
 						thread = new Thread(() -> {
-							while (NativeSingleSeedCracker.isRunning()) {
-								long seedsSearched = NativeSingleSeedCracker.getSeedsSearched();
+							while (singleSeedCracker.isRunning()) {
+								long seedsSearched = singleSeedCracker.getSeedsSearched();
 								progressBar.setValue((int) seedsSearched);
 								progressBar.setString(
 										"Seeds searched: " + seedsSearched + " / " + progressBar.getMaximum());
@@ -319,9 +329,9 @@ public class EnchCrackerWindow extends JFrame {
 		btnResetCracker.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Log.info("Reset the cracker");
-				NativeSingleSeedCracker.abortAndThen(() -> {
-					NativeSingleSeedCracker.setFirstTime(true);
-					NativeSingleSeedCracker.resetCracker();
+				singleSeedCracker.abortAndThen(() -> {
+					singleSeedCracker.setFirstTime(true);
+					singleSeedCracker.resetCracker();
 					xpSeedOutput.setText("XP seed: unknown");
 				});
 			}
