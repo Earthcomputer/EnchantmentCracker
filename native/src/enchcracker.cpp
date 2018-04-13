@@ -90,16 +90,14 @@ std::atomic<bool> abortRequested(false);
 /*
  * Called to initialize the cracker
  */
-JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_ninitCracker(
-		JNIEnv* env, jobject thisObj) {
+void ninitCracker() {
 	possibleSeeds.reserve(1LL << 25);
 }
 
 /*
  * Called when the reset cracker button is pressed
  */
-JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nresetCracker(
-		JNIEnv* env, jobject thisObj) {
+void nresetCracker() {
 	possibleSeeds.clear();
 	nextPossibleSeeds.clear();
 }
@@ -107,9 +105,7 @@ JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nresetCracker(
 /*
  * Called on the first brute force attempt, to save having to store all 2^32 seed initially
  */
-JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nfirstInput(
-		JNIEnv* env, jobject thisObj, jint bookshelves, jint slot1, jint slot2,
-		jint slot3) {
+void nfirstInput(jint bookshelves, jint slot1, jint slot2, jint slot3) {
 	jrand rand;
 	seedsSearched.store(0);
 
@@ -140,9 +136,7 @@ JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nfirstInput(
 /*
  * Called on subsequent brute force attempts, makes use of a list of previous possible seeds
  */
-JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_naddInput(
-		JNIEnv* env, jobject thisObj, jint bookshelves, jint slot1, jint slot2,
-		jint slot3) {
+void naddInput(jint bookshelves, jint slot1, jint slot2, jint slot3) {
 
 	jrand rand;
 	nextPossibleSeeds.clear();
@@ -179,8 +173,7 @@ JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_naddInput(
 /*
  * Called to get the number of possible seeds
  */
-JNIEXPORT jint JNICALL Java_enchcracker_NativeSingleSeedCracker_ngetPossibleSeeds(
-		JNIEnv* env, jobject thisObj) {
+jint ngetPossibleSeeds() {
 	possibleSeedsMutex.lock();
 	jint size = possibleSeeds.size();
 	possibleSeedsMutex.unlock();
@@ -190,32 +183,28 @@ JNIEXPORT jint JNICALL Java_enchcracker_NativeSingleSeedCracker_ngetPossibleSeed
 /*
  * Called to get the seed, if there is only one possible seed
  */
-JNIEXPORT jint JNICALL Java_enchcracker_NativeSingleSeedCracker_ngetSeed(
-		JNIEnv* env, jobject thisObj) {
+jint ngetSeed() {
 	return possibleSeeds[0];
 }
 
 /*
  * Requests that the search should be aborted
  */
-JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nrequestAbort(
-		JNIEnv* env, jobject thisObj) {
+void nrequestAbort() {
 	abortRequested.store(true);
 }
 
 /*
  * Gets whether the search has been requested to be aborted
  */
-JNIEXPORT jboolean JNICALL Java_enchcracker_NativeSingleSeedCracker_nisAbortRequested(
-		JNIEnv* env, jobject thisObj) {
+jboolean nisAbortRequested() {
 	return abortRequested.load();
 }
 
 /*
  * Gets the number of seeds searched
  */
-JNIEXPORT jlong JNICALL Java_enchcracker_NativeSingleSeedCracker_ngetSeedsSearched(
-		JNIEnv* env, jobject thisObj) {
+jlong ngetSeedsSearched() {
 	return seedsSearched.load();
 }
 
