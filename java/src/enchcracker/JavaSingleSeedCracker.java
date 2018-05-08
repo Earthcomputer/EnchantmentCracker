@@ -36,7 +36,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 	@Override
 	public boolean initCracker() {
-		possibleSeeds.ensureCapacity(1 << 25);
+		possibleSeeds.ensureCapacity(1 << 27);
 		return true;
 	}
 

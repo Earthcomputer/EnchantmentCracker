@@ -35,12 +35,28 @@ inline void throwJavaException(JNIEnv* env, std::exception& ex) {
 	}
 }
 
+jint on_load(JavaVM* jvm);
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
+	return on_load(jvm);
+}
+
 void ninitCracker();
 
 JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_ninitCracker(
 		JNIEnv* env, jobject thisObj) {
 	try {
 		ninitCracker();
+	} catch (std::exception& e) {
+		throwJavaException(env, e);
+	}
+}
+
+void nfinalizeCracker();
+
+JNIEXPORT void JNICALL Java_enchcracker_NativeSingleSeedCracker_nfinalizeCracker(JNIEnv* env, jobject thisObj) {
+	try {
+		nfinalizeCracker();
 	} catch (std::exception& e) {
 		throwJavaException(env, e);
 	}

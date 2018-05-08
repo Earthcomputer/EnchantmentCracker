@@ -45,6 +45,8 @@ public class NativeSingleSeedCracker extends AbstractSingleSeedCracker {
 	}
 
 	private native void ninitCracker();
+	
+	private native void nfinalizeCracker();
 
 	@Override
 	public void resetCracker() {
@@ -101,5 +103,11 @@ public class NativeSingleSeedCracker extends AbstractSingleSeedCracker {
 	}
 
 	private native long ngetSeedsSearched();
+
+	@Override
+	public void finalize() {
+		// Free a lot of memory (because native code needs to be told to)
+		nfinalizeCracker();
+	}
 
 }
