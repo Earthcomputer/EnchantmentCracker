@@ -12,7 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Dimension;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -29,9 +31,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -142,6 +146,20 @@ public class EnchCrackerWindow extends JFrame {
 		tabbedPane.addTab("XP seed", null, panel_6, null);
 		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.X_AXIS));
 
+		JPanel viewPanel = new JPanel();
+		tabbedPane.addTab("Loaded Data", null, viewPanel, null);
+		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.X_AXIS));
+
+		JPanel dataPanel1 = new JPanel();
+		dataPanel1.setLayout(new BoxLayout(dataPanel1,BoxLayout.Y_AXIS));
+
+		JPanel dataPanel2 = new JPanel();
+		dataPanel2.setLayout(new BoxLayout(dataPanel2,BoxLayout.Y_AXIS));
+
+		JSplitPane enchDataPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,dataPanel1,dataPanel2);
+		viewPanel.add(enchDataPanel);
+		enchDataPanel.setDividerLocation(232);
+
 		JPanel panel_4 = new JPanel();
 		panel_6.add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
@@ -200,9 +218,14 @@ public class EnchCrackerWindow extends JFrame {
 		JButton btnAddInfo = new JButton("Add Info");
 		panel_19.add(btnAddInfo);
 		btnAddInfo.setToolTipText("Use this information to narrow down the possible XP seeds");
+		ArrayList<EnchData> enchData = new ArrayList<EnchData>();
 		btnAddInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int bookshelves, slot1, slot2, slot3;
+				bookshelvesTextField.setBackground(Color.white);
+				slot1TextField.setBackground(Color.white);
+				slot2TextField.setBackground(Color.white);
+				slot3TextField.setBackground(Color.white);
 				try {
 					bookshelves = Integer.parseInt(bookshelvesTextField.getText());
 					slot1 = Integer.parseInt(slot1TextField.getText());
@@ -215,15 +238,35 @@ public class EnchCrackerWindow extends JFrame {
 
 				if (bookshelves < 0 || bookshelves > 15) {
 					Log.info("Add info failed, bookshelf count invalid");
+					bookshelvesTextField.setBackground(new Color(1.0F,0.3F,0.0F));
 					return;
 				}
 
-				if (slot1 < 0 || slot1 > 30 || slot2 < 0 || slot2 > 30 || slot3 < 0 || slot3 > 30) {
-					Log.info("Add info failed, slot count invalid");
+				if(slot1<0||slot1>30){
+					Log.info("Add info failed, slot 1 count invalid");
+					slot1TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					return;
+				}
+				if(slot2<0||slot2>30){
+					Log.info("Add info failed, slot 2 count invalid");
+					slot2TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					return;
+				}
+				if(slot3<0||slot3>30){
+					Log.info("Add info failed, slot 3 count invalid");
+					slot3TextField.setBackground(new Color(1.0F,0.3F,0.0F));
 					return;
 				}
 
 				Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
+
+				enchData.add(new EnchData(bookshelves,slot1,slot2,slot3));
+				JLabel enchDataText = new JLabel(new EnchData(bookshelves,slot1,slot2,slot3).toString());
+				if(dataPanel1.getComponentCount()<8){
+					dataPanel1.add(enchDataText);
+				}else{
+					dataPanel2.add(enchDataText);
+				}
 
 				singleSeedCracker.abortAndThen(() -> {
 					// First time is different because otherwise we have to store all 2^32 initial seeds
@@ -243,6 +286,13 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								if(xpSeed1TextField.getText().equals("")){
+									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+								}else{
+									if(xpSeed2TextField.getText().equals("")){
+										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+									}
+								}
 								break;
 							default:
 								xpSeedOutput.setText("Possible seeds: " + possibleSeeds);
@@ -261,6 +311,13 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								if(xpSeed1TextField.getText().equals("")){
+									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+								}else{
+									if(xpSeed2TextField.getText().equals("")){
+										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+									}
+								}
 								break;
 							default:
 								xpSeedOutput.setText("Possible seeds: " + possibleSeeds);
@@ -318,6 +375,20 @@ public class EnchCrackerWindow extends JFrame {
 		});
 		btnAddInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+		JPanel view = new JPanel();
+		panel_5.add(view);
+
+		JButton btnViewData = new JButton("View Data");
+		view.add(btnViewData);
+		btnViewData.setToolTipText("View all currently loaded data");
+		btnViewData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Log.info("View button pressed");
+				tabbedPane.setSelectedIndex(1);
+			}
+		});
+		btnViewData.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 		JPanel panel_18 = new JPanel();
 		panel_5.add(panel_18);
 
@@ -330,6 +401,14 @@ public class EnchCrackerWindow extends JFrame {
 				singleSeedCracker.abortAndThen(() -> {
 					singleSeedCracker.setFirstTime(true);
 					singleSeedCracker.resetCracker();
+					dataPanel1.removeAll();
+					dataPanel2.removeAll();
+					dataPanel1.updateUI();
+					dataPanel2.updateUI();
+					bookshelvesTextField.setText("");
+					slot1TextField.setText("");
+					slot2TextField.setText("");
+					slot3TextField.setText("");
 					xpSeedOutput.setText("XP seed: unknown");
 				});
 			}
@@ -378,6 +457,9 @@ public class EnchCrackerWindow extends JFrame {
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean found;
+				forcePlayerSeedTextField.setBackground(Color.white);
+				xpSeed1TextField.setBackground(Color.white);
+				xpSeed2TextField.setBackground(Color.white);
 
 				if (!forcePlayerSeedTextField.getText().isEmpty()) {
 					try {
@@ -385,6 +467,7 @@ public class EnchCrackerWindow extends JFrame {
 								& 0x0000_ffff_ffff_ffffL;
 					} catch (NumberFormatException e) {
 						Log.info("Calculate player seed failed, invalid force player seed");
+						forcePlayerSeedTextField.setBackground(new Color(1.0F,0.3F,0.0F));
 						return;
 					}
 					Log.info("Forced player seed");
@@ -394,9 +477,17 @@ public class EnchCrackerWindow extends JFrame {
 					int xpSeed1, xpSeed2;
 					try {
 						xpSeed1 = Integer.parseUnsignedInt(xpSeed1TextField.getText(), 16);
+					} catch (NumberFormatException e) {
+						Log.info("Calculate player seed failed, XP seed 1 invalid");
+						xpSeed1TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+						return;
+					}
+
+					try {
 						xpSeed2 = Integer.parseUnsignedInt(xpSeed2TextField.getText(), 16);
 					} catch (NumberFormatException e) {
-						Log.info("Calculate player seed failed, XP seed invalid");
+						Log.info("Calculate player seed failed, XP seed 2 invalid");
+						xpSeed2TextField.setBackground(new Color(1.0F,0.3F,0.0F));
 						return;
 					}
 
@@ -429,7 +520,7 @@ public class EnchCrackerWindow extends JFrame {
 		JPanel panel_15 = new JPanel();
 		panel_7.add(panel_15);
 
-		JLabel lblForcePlayerSeed = new JLabel("Force Player Seed:");
+		JLabel lblForcePlayerSeed = new JLabel("Force Player Seed (optional):");
 		lblForcePlayerSeed.setToolTipText("Only use this if you (for some reason) already know the player seed");
 		panel_15.add(lblForcePlayerSeed);
 
