@@ -260,12 +260,13 @@ public class EnchCrackerWindow extends JFrame {
 
 				Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
 
-				enchData.add(new EnchData(bookshelves,slot1,slot2,slot3));
-				JLabel enchDataText = new JLabel(new EnchData(bookshelves,slot1,slot2,slot3).toString());
+				EnchData ench = new EnchData(bookshelves,slot1,slot2,slot3);
+				enchData.add(ench);
+				JLabel enchString = new JLabel(ench.toString());
 				if(dataPanel1.getComponentCount()<8){
-					dataPanel1.add(enchDataText);
+					dataPanel1.add(enchString);
 				}else{
-					dataPanel2.add(enchDataText);
+					dataPanel2.add(enchString);
 				}
 
 				singleSeedCracker.abortAndThen(() -> {
@@ -286,10 +287,10 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-								if(xpSeed1TextField.getText().equals("")){
+								if(xpSeed1TextField.getText().isEmpty()){
 									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 								}else{
-									if(xpSeed2TextField.getText().equals("")){
+									if(xpSeed2TextField.getText().isEmpty()){
 										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 									}
 								}
@@ -311,10 +312,10 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-								if(xpSeed1TextField.getText().equals("")){
+								if(xpSeed1TextField.getText().isEmpty()){
 									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 								}else{
-									if(xpSeed2TextField.getText().equals("")){
+									if(xpSeed2TextField.getText().isEmpty()){
 										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 									}
 								}
