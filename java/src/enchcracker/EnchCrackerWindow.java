@@ -151,12 +151,12 @@ public class EnchCrackerWindow extends JFrame {
 		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.X_AXIS));
 
 		JPanel dataPanel1 = new JPanel();
-		dataPanel1.setLayout(new BoxLayout(dataPanel1,BoxLayout.Y_AXIS));
+		dataPanel1.setLayout(new BoxLayout(dataPanel1, BoxLayout.Y_AXIS));
 
 		JPanel dataPanel2 = new JPanel();
-		dataPanel2.setLayout(new BoxLayout(dataPanel2,BoxLayout.Y_AXIS));
+		dataPanel2.setLayout(new BoxLayout(dataPanel2, BoxLayout.Y_AXIS));
 
-		JSplitPane enchDataPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,dataPanel1,dataPanel2);
+		JSplitPane enchDataPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPanel1, dataPanel2);
 		viewPanel.add(enchDataPanel);
 		enchDataPanel.setDividerLocation(232);
 
@@ -238,32 +238,32 @@ public class EnchCrackerWindow extends JFrame {
 
 				if (bookshelves < 0 || bookshelves > 15) {
 					Log.info("Add info failed, bookshelf count invalid");
-					bookshelvesTextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					bookshelvesTextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
 
-				if(slot1<0||slot1>30){
+				if(slot1<0 || slot1>30){
 					Log.info("Add info failed, slot 1 count invalid");
-					slot1TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					slot1TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
-				if(slot2<0||slot2>30){
+				if(slot2<0 || slot2>30){
 					Log.info("Add info failed, slot 2 count invalid");
-					slot2TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					slot2TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
-				if(slot3<0||slot3>30){
+				if(slot3<0 || slot3>30){
 					Log.info("Add info failed, slot 3 count invalid");
-					slot3TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+					slot3TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
 
 				Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
 
-				EnchData ench = new EnchData(bookshelves,slot1,slot2,slot3);
+				EnchData ench = new EnchData(bookshelves, slot1, slot2, slot3);
 				enchData.add(ench);
 				JLabel enchString = new JLabel(ench.toString());
-				if(dataPanel1.getComponentCount()<8){
+				if(dataPanel1.getComponentCount() < 8){
 					dataPanel1.add(enchString);
 				}else{
 					dataPanel2.add(enchString);
@@ -468,7 +468,7 @@ public class EnchCrackerWindow extends JFrame {
 								& 0x0000_ffff_ffff_ffffL;
 					} catch (NumberFormatException e) {
 						Log.info("Calculate player seed failed, invalid force player seed");
-						forcePlayerSeedTextField.setBackground(new Color(1.0F,0.3F,0.0F));
+						forcePlayerSeedTextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 						return;
 					}
 					Log.info("Forced player seed");
@@ -480,7 +480,7 @@ public class EnchCrackerWindow extends JFrame {
 						xpSeed1 = Integer.parseUnsignedInt(xpSeed1TextField.getText(), 16);
 					} catch (NumberFormatException e) {
 						Log.info("Calculate player seed failed, XP seed 1 invalid");
-						xpSeed1TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+						xpSeed1TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 						return;
 					}
 
@@ -488,7 +488,7 @@ public class EnchCrackerWindow extends JFrame {
 						xpSeed2 = Integer.parseUnsignedInt(xpSeed2TextField.getText(), 16);
 					} catch (NumberFormatException e) {
 						Log.info("Calculate player seed failed, XP seed 2 invalid");
-						xpSeed2TextField.setBackground(new Color(1.0F,0.3F,0.0F));
+						xpSeed2TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 						return;
 					}
 
