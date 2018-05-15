@@ -242,17 +242,19 @@ public class EnchCrackerWindow extends JFrame {
 					return;
 				}
 
-				if(slot1<0 || slot1>30){
+				if (slot1 < 0 || slot1 > 30) {
 					Log.info("Add info failed, slot 1 count invalid");
 					slot1TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
-				if(slot2<0 || slot2>30){
+				
+				if (slot2 < 0 || slot2 > 30) {
 					Log.info("Add info failed, slot 2 count invalid");
 					slot2TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
 				}
-				if(slot3<0 || slot3>30){
+				
+				if (slot3 < 0 || slot3 > 30) {
 					Log.info("Add info failed, slot 3 count invalid");
 					slot3TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
 					return;
@@ -263,9 +265,9 @@ public class EnchCrackerWindow extends JFrame {
 				EnchData ench = new EnchData(bookshelves, slot1, slot2, slot3);
 				enchData.add(ench);
 				JLabel enchString = new JLabel(ench.toString());
-				if(dataPanel1.getComponentCount() < 8){
+				if (dataPanel1.getComponentCount() < 8) {
 					dataPanel1.add(enchString);
-				}else{
+				} else {
 					dataPanel2.add(enchString);
 				}
 
@@ -287,12 +289,10 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-								if(xpSeed1TextField.getText().isEmpty()){
+								if (xpSeed1TextField.getText().isEmpty()) {
 									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
-								}else{
-									if(xpSeed2TextField.getText().isEmpty()){
-										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
-									}
+								} else if (xpSeed2TextField.getText().isEmpty()) {
+									xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 								}
 								break;
 							default:
@@ -312,10 +312,10 @@ public class EnchCrackerWindow extends JFrame {
 								break;
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-								if(xpSeed1TextField.getText().isEmpty()){
+								if(xpSeed1TextField.getText().isEmpty()) {
 									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
-								}else{
-									if(xpSeed2TextField.getText().isEmpty()){
+								} else {
+									if (xpSeed2TextField.getText().isEmpty()) {
 										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
 									}
 								}
