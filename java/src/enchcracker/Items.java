@@ -59,7 +59,8 @@ public class Items {
 			BOOK = "book",
 			ENCHANTED_BOOK = "enchanted_book",
 			PUMPKIN = "pumpkin",
-			SKULL = "skull";
+			SKULL = "skull",
+			TRIDENT = "trident";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -194,7 +195,8 @@ public class Items {
 				|| FISHING_ROD.equals(item)
 				|| FLINT_AND_STEEL.equals(item)
 				|| SHEARS.equals(item)
-				|| SHIELD.equals(item);
+				|| SHIELD.equals(item)
+				|| TRIDENT.equals(item);
 		// @formatter:on
 	}
 
@@ -237,6 +239,9 @@ public class Items {
 			return 1;
 		}
 		if (FISHING_ROD.equals(item)) {
+			return 1;
+		}
+		if (TRIDENT.equals(item)) {
 			return 1;
 		}
 		if (BOOK.equals(item)) {

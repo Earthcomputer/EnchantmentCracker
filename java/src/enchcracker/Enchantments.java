@@ -44,6 +44,10 @@ public class Enchantments {
 			INFINITY = 51,
 			LUCK_OF_THE_SEA = 61,
 			LURE = 62,
+			LOYALTY = 64,
+			IMPALING = 65,
+			RIPTIDE = 66,
+			CHANNELING = 67,
 			MENDING = 70,
 			VANISHING_CURSE = 71;
 	// @formatter:on
@@ -61,8 +65,8 @@ public class Enchantments {
 			32, 33, 34, 35,
 			// bow                                          // fishing rod
 			48, 49, 50, 51,                                     61, 62,
-			                      // other
-			                        70, 71
+			// trident            // other
+			64, 65, 66, 67,         70, 71
 	};
 	// @formatter:on
 
@@ -107,6 +111,16 @@ public class Enchantments {
 		set = new HashSet<>();
 		set.add(SILK_TOUCH);
 		set.add(LUCK_OF_THE_SEA);
+		INCOMPATIBLE_GROUPS.add(set);
+
+		set = new HashSet<>();
+		set.add(RIPTIDE);
+		set.add(LOYALTY);
+		INCOMPATIBLE_GROUPS.add(set);
+
+		set = new HashSet<>();
+		set.add(RIPTIDE);
+		set.add(CHANNELING);
 		INCOMPATIBLE_GROUPS.add(set);
 
 		for (Field field : Enchantments.class.getDeclaredFields()) {
@@ -184,6 +198,11 @@ public class Enchantments {
 			return Items.hasDurability(item);
 		case VANISHING_CURSE:
 			return Items.hasDurability(item) || Items.PUMPKIN.equals(item) || Items.SKULL.equals(item);
+		case LOYALTY:
+		case IMPALING:
+		case RIPTIDE:
+		case CHANNELING:
+			return Items.TRIDENT.equals(item);
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -201,6 +220,7 @@ public class Enchantments {
 		case BANE_OF_ARTHROPODS:
 		case EFFICIENCY:
 		case POWER:
+		case IMPALING:
 			return 5;
 		case PROTECTION:
 		case FIRE_PROTECTION:
@@ -217,6 +237,8 @@ public class Enchantments {
 		case LUCK_OF_THE_SEA:
 		case LURE:
 		case UNBREAKING:
+		case LOYALTY:
+		case RIPTIDE:
 			return 3;
 		case FROST_WALKER:
 		case KNOCKBACK:
@@ -230,6 +252,7 @@ public class Enchantments {
 		case INFINITY:
 		case MENDING:
 		case VANISHING_CURSE:
+		case CHANNELING:
 			return 1;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
@@ -298,6 +321,14 @@ public class Enchantments {
 			return 25;
 		case VANISHING_CURSE:
 			return 25;
+		case LOYALTY:
+			return 5 + level * 7;
+		case IMPALING:
+			return 1 + (level - 1) * 8;
+		case RIPTIDE:
+			return 10 * level + 7;
+		case CHANNELING:
+			return 25;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -365,6 +396,14 @@ public class Enchantments {
 			return 75;
 		case VANISHING_CURSE:
 			return 50;
+		case LOYALTY:
+			return 50;
+		case IMPALING:
+			return 21 + (level - 1) * 8;
+		case RIPTIDE:
+			return 50;
+		case CHANNELING:
+			return 50;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -384,6 +423,7 @@ public class Enchantments {
 		case BANE_OF_ARTHROPODS:
 		case KNOCKBACK:
 		case UNBREAKING:
+		case LOYALTY:
 			return 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
@@ -399,12 +439,15 @@ public class Enchantments {
 		case LUCK_OF_THE_SEA:
 		case LURE:
 		case MENDING:
+		case IMPALING:
+		case RIPTIDE:
 			return 2;
 		case THORNS:
 		case BINDING_CURSE:
 		case SILK_TOUCH:
 		case INFINITY:
 		case VANISHING_CURSE:
+		case CHANNELING:
 			return 1;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
@@ -429,7 +472,8 @@ public class Enchantments {
 		}
 		int enchantmentId = BY_NAME.get(enchantment);
 
-		// Get the max level on enchantment tables by maximizing the random values
+		// Get the max level on enchantment tables by maximizing the random
+		// values
 		int enchantability = Items.getEnchantability(item);
 		int maxLevel;
 		if (enchantability == 0 || isTreasure(enchantmentId) || !canApply(enchantmentId, item, true)) {
@@ -446,11 +490,11 @@ public class Enchantments {
 
 		if (parts.length == 1) {
 			// Infer the level
-			
+
 			if (maxLevel == 0) {
 				return Collections.emptyList();
 			}
-			
+
 			if (maxOnly) {
 				return Collections.singletonList(new EnchantmentInstance(enchantmentId, maxLevel));
 			} else {
@@ -539,7 +583,8 @@ public class Enchantments {
 				}
 			}
 
-			//allowedEnchantments.forEach(ench -> System.out.println("Allowed: " + ench));
+			// allowedEnchantments.forEach(ench -> System.out.println("Allowed:
+			// " + ench));
 
 			if (!allowedEnchantments.isEmpty()) {
 				// Get first enchantment
