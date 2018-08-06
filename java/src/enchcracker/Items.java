@@ -60,7 +60,8 @@ public class Items {
 			ENCHANTED_BOOK = "enchanted_book",
 			PUMPKIN = "pumpkin",
 			SKULL = "skull",
-			TRIDENT = "trident";
+			TRIDENT = "trident",
+			TURTLE_HELMET = "turtle_helmet";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -87,6 +88,7 @@ public class Items {
 					|| DIAMOND_CHESTPLATE.equals(item)
 					|| DIAMOND_LEGGINGS.equals(item)
 					|| DIAMOND_BOOTS.equals(item)
+					|| TURTLE_HELMET.equals(item)
 					) {
 				return true;
 			}
@@ -216,6 +218,9 @@ public class Items {
 			}
 			if (item.startsWith("diamond_")) {
 				return 10;
+			}
+			if (item.startsWith("turtle_")) {
+				return 9;
 			}
 		}
 		if (isSword(item) || isTool(item)) {
