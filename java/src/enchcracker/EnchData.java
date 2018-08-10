@@ -1,7 +1,5 @@
 package enchcracker;
 
-import java.util.ArrayList;
-
 public class EnchData {
   private int shelves = -1;
   private int s1 = -1;
