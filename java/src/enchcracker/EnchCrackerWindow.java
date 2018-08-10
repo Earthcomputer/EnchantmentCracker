@@ -290,9 +290,9 @@ public class EnchCrackerWindow extends JFrame {
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
 								if (xpSeed1TextField.getText().isEmpty()) {
-									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
 								} else if (xpSeed2TextField.getText().isEmpty()) {
-									xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
+									xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
 								}
 								break;
 							default:
@@ -313,11 +313,9 @@ public class EnchCrackerWindow extends JFrame {
 							case 1:
 								xpSeedOutput.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
 								if (xpSeed1TextField.getText().isEmpty()) {
-									xpSeed1TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
-								} else {
-									if (xpSeed2TextField.getText().isEmpty()) {
-										xpSeed2TextField.setText(Integer.toHexString(singleSeedCracker.getSeed()));
-									}
+									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
+								} else if (xpSeed2TextField.getText().isEmpty()) {
+									xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
 								}
 								break;
 							default:
