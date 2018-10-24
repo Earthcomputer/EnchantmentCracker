@@ -41,6 +41,9 @@ public class Enchantments {
 			IMPALING = "impaling",
 			RIPTIDE = "riptide",
 			CHANNELING = "channeling",
+			MULTISHOT = "multishot",
+			QUICK_CHARGE = "quick_charge",
+			PIERCING = "piercing",
 			MENDING = "mending",
 			VANISHING_CURSE = "vanishing_curse";
 	// @formatter:on
@@ -110,6 +113,11 @@ public class Enchantments {
 		set = new HashSet<>();
 		set.add(RIPTIDE);
 		set.add(CHANNELING);
+		INCOMPATIBLE_GROUPS.add(set);
+
+		set = new HashSet<>();
+		set.add(MULTISHOT);
+		set.add(PIERCING);
 		INCOMPATIBLE_GROUPS.add(set);
 
 		for (Field field : Enchantments.class.getDeclaredFields()) {
@@ -182,6 +190,10 @@ public class Enchantments {
 		case RIPTIDE:
 		case CHANNELING:
 			return Items.TRIDENT.equals(item);
+		case MULTISHOT:
+		case QUICK_CHARGE:
+		case PIERCING:
+			return Items.CROSSBOW.equals(item);
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -206,6 +218,7 @@ public class Enchantments {
 		case BLAST_PROTECTION:
 		case PROJECTILE_PROTECTION:
 		case FEATHER_FALLING:
+		case PIERCING:
 			return 4;
 		case THORNS:
 		case DEPTH_STRIDER:
@@ -218,6 +231,7 @@ public class Enchantments {
 		case UNBREAKING:
 		case LOYALTY:
 		case RIPTIDE:
+		case QUICK_CHARGE:
 			return 3;
 		case FROST_WALKER:
 		case KNOCKBACK:
@@ -232,6 +246,7 @@ public class Enchantments {
 		case MENDING:
 		case VANISHING_CURSE:
 		case CHANNELING:
+		case MULTISHOT:
 			return 1;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
@@ -308,6 +323,12 @@ public class Enchantments {
 			return 10 * level + 7;
 		case CHANNELING:
 			return 25;
+		case MULTISHOT:
+			return 20;
+		case QUICK_CHARGE:
+			return 12 + (level - 1) * 20;
+		case PIERCING:
+			return 1 + (level - 1) * 10;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -383,6 +404,12 @@ public class Enchantments {
 			return 50;
 		case CHANNELING:
 			return 50;
+		case MULTISHOT:
+			return 50;
+		case QUICK_CHARGE:
+			return 50;
+		case PIERCING:
+			return 50;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -394,6 +421,7 @@ public class Enchantments {
 		case SHARPNESS:
 		case EFFICIENCY:
 		case POWER:
+		case PIERCING:
 			return 10;
 		case FIRE_PROTECTION:
 		case FEATHER_FALLING:
@@ -403,6 +431,7 @@ public class Enchantments {
 		case KNOCKBACK:
 		case UNBREAKING:
 		case LOYALTY:
+		case QUICK_CHARGE:
 			return 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
@@ -420,6 +449,7 @@ public class Enchantments {
 		case MENDING:
 		case IMPALING:
 		case RIPTIDE:
+		case MULTISHOT:
 			return 2;
 		case THORNS:
 		case BINDING_CURSE:

@@ -61,7 +61,8 @@ public class Items {
 			PUMPKIN = "pumpkin",
 			SKULL = "skull",
 			TRIDENT = "trident",
-			TURTLE_HELMET = "turtle_helmet";
+			TURTLE_HELMET = "turtle_helmet",
+			CROSSBOW = "crossbow";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -198,7 +199,8 @@ public class Items {
 				|| FLINT_AND_STEEL.equals(item)
 				|| SHEARS.equals(item)
 				|| SHIELD.equals(item)
-				|| TRIDENT.equals(item);
+				|| TRIDENT.equals(item)
+				|| CROSSBOW.equals(item);
 		// @formatter:on
 	}
 
@@ -247,6 +249,9 @@ public class Items {
 			return 1;
 		}
 		if (TRIDENT.equals(item)) {
+			return 1;
+		}
+		if (CROSSBOW.equals(item)) {
 			return 1;
 		}
 		if (BOOK.equals(item)) {
