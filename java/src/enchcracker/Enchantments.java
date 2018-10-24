@@ -2,78 +2,67 @@ package enchcracker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.ToIntFunction;
 
 public class Enchantments {
 
 	// @formatter:off
-	public static final int
-			PROTECTION = 0,
-			FIRE_PROTECTION = 1,
-			FEATHER_FALLING = 2,
-			BLAST_PROTECTION = 3,
-			PROJECTILE_PROTECTION = 4,
-			RESPIRATION = 5,
-			AQUA_AFFINITY = 6,
-			THORNS = 7,
-			DEPTH_STRIDER = 8,
-			FROST_WALKER = 9,
-			BINDING_CURSE = 10,
-			SHARPNESS = 16,
-			SMITE = 17,
-			BANE_OF_ARTHROPODS = 18,
-			KNOCKBACK = 19,
-			FIRE_ASPECT = 20,
-			LOOTING = 21,
-			SWEEPING = 22,
-			EFFICIENCY = 32,
-			SILK_TOUCH = 33,
-			UNBREAKING = 34,
-			FORTUNE = 35,
-			POWER = 48,
-			PUNCH = 49,
-			FLAME = 50,
-			INFINITY = 51,
-			LUCK_OF_THE_SEA = 61,
-			LURE = 62,
-			LOYALTY = 64,
-			IMPALING = 65,
-			RIPTIDE = 66,
-			CHANNELING = 67,
-			MENDING = 70,
-			VANISHING_CURSE = 71;
+	public static final String
+			PROTECTION = "protection",
+			FIRE_PROTECTION = "fire_protection",
+			FEATHER_FALLING = "feather_falling",
+			BLAST_PROTECTION = "blast_protection",
+			PROJECTILE_PROTECTION = "projectile_protection",
+			RESPIRATION = "respiration",
+			AQUA_AFFINITY = "aqua_affinity",
+			THORNS = "thorns",
+			DEPTH_STRIDER = "depth_strider",
+			FROST_WALKER = "frost_walker",
+			BINDING_CURSE = "binding_curse",
+			SHARPNESS = "sharpness",
+			SMITE = "smite",
+			BANE_OF_ARTHROPODS = "bane_of_arthropods",
+			KNOCKBACK = "knockback",
+			FIRE_ASPECT = "fire_aspect",
+			LOOTING = "looting",
+			SWEEPING = "sweeping",
+			EFFICIENCY = "efficiency",
+			SILK_TOUCH = "silk_touch",
+			UNBREAKING = "unbreaking",
+			FORTUNE = "fortune",
+			POWER = "power",
+			PUNCH = "punch",
+			FLAME = "flame",
+			INFINITY = "infinity",
+			LUCK_OF_THE_SEA = "luck_of_the_sea",
+			LURE = "lure",
+			LOYALTY = "loyalty",
+			IMPALING = "impaling",
+			RIPTIDE = "riptide",
+			CHANNELING = "channeling",
+			MENDING = "mending",
+			VANISHING_CURSE = "vanishing_curse";
 	// @formatter:on
-
-	public static final String[] ENCHANTMENT_NAMES = new String[256];
-	public static final Map<String, Integer> BY_NAME = new HashMap<>();
 
 	// @formatter:off
-	public static final int[] ALL_ENCHANTMENTS = {
-			// armor
-			 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
-			// sword
-			16, 17, 18, 19, 20, 21, 22,
-			// tools
-			32, 33, 34, 35,
-			// bow                                          // fishing rod
-			48, 49, 50, 51,                                     61, 62,
-			// trident            // other
-			64, 65, 66, 67,         70, 71
-	};
+	public static final LinkedHashSet<String> ALL_ENCHANTMENTS = new LinkedHashSet<>();
 	// @formatter:on
 
-	private static final Set<Set<Integer>> INCOMPATIBLE_GROUPS = new HashSet<>();
+	private static final Set<Set<String>> INCOMPATIBLE_GROUPS = new HashSet<>();
 
 	static {
-		Set<Integer> set;
+		for (Field field : Enchantments.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class) {
+				try {
+					ALL_ENCHANTMENTS.add((String) field.get(null));
+				} catch (Exception e) {
+					throw new AssertionError(e);
+				}
+			}
+		}
+
+		Set<String> set;
 
 		set = new HashSet<>();
 		set.add(INFINITY);
@@ -125,30 +114,20 @@ public class Enchantments {
 
 		for (Field field : Enchantments.class.getDeclaredFields()) {
 			if (field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
-				if (field.getType() == int.class) {
-					String enchantmentName = field.getName().toLowerCase();
-					int enchantmentId;
+				if (field.getType() == String.class) {
+					String enchantmentName;
 					try {
-						enchantmentId = field.getInt(null);
+						enchantmentName = (String) field.get(null);
 					} catch (Exception e) {
 						throw new Error(e);
 					}
-					ENCHANTMENT_NAMES[enchantmentId] = enchantmentName;
-					BY_NAME.put(enchantmentName, enchantmentId);
+					ALL_ENCHANTMENTS.add(enchantmentName);
 				}
 			}
 		}
 	}
 
-	public static String getName(int enchantment) {
-		if (enchantment < 0 || enchantment >= 256) {
-			return null;
-		} else {
-			return ENCHANTMENT_NAMES[enchantment];
-		}
-	}
-
-	public static boolean canApply(int enchantment, String item, boolean primary) {
+	public static boolean canApply(String enchantment, String item, boolean primary) {
 		if (Items.BOOK.equals(item)) {
 			return true;
 		}
@@ -208,12 +187,12 @@ public class Enchantments {
 		}
 	}
 
-	public static boolean isTreasure(int enchantment) {
-		return enchantment == FROST_WALKER || enchantment == MENDING || enchantment == BINDING_CURSE
-				|| enchantment == VANISHING_CURSE;
+	public static boolean isTreasure(String enchantment) {
+		return FROST_WALKER.equals(enchantment) || MENDING.equals(enchantment) || BINDING_CURSE.equals(enchantment)
+				|| VANISHING_CURSE.equals(enchantment);
 	}
 
-	public static int getMaxLevel(int enchantment) {
+	public static int getMaxLevel(String enchantment) {
 		switch (enchantment) {
 		case SHARPNESS:
 		case SMITE:
@@ -259,7 +238,7 @@ public class Enchantments {
 		}
 	}
 
-	public static int getMinEnchantability(int enchantment, int level) {
+	public static int getMinEnchantability(String enchantment, int level) {
 		switch (enchantment) {
 		case PROTECTION:
 			return 1 + (level - 1) * 11;
@@ -334,7 +313,7 @@ public class Enchantments {
 		}
 	}
 
-	public static int getMaxEnchantability(int enchantment, int level) {
+	public static int getMaxEnchantability(String enchantment, int level) {
 		switch (enchantment) {
 		case PROTECTION:
 			return 1 + level * 11;
@@ -409,7 +388,7 @@ public class Enchantments {
 		}
 	}
 
-	public static int getWeight(int enchantment) {
+	public static int getWeight(String enchantment) {
 		switch (enchantment) {
 		case PROTECTION:
 		case SHARPNESS:
@@ -454,9 +433,9 @@ public class Enchantments {
 		}
 	}
 
-	public static boolean areCompatible(int enchA, int enchB) {
+	public static boolean areCompatible(String enchA, String enchB) {
 		// Can't have same enchantment twice
-		if (enchA == enchB) {
+		if (enchA.equals(enchB)) {
 			return false;
 		}
 
@@ -466,23 +445,22 @@ public class Enchantments {
 	public static List<EnchantmentInstance> parseEnchantmentInstance(String item, String str, boolean maxOnly) {
 		String[] parts = str.trim().split("\\s+");
 
-		String enchantment = parts[0];
-		if (!BY_NAME.containsKey(enchantment)) {
+		String enchantment = parts[0].toLowerCase();
+		if (!ALL_ENCHANTMENTS.contains(enchantment)) {
 			return Collections.emptyList();
 		}
-		int enchantmentId = BY_NAME.get(enchantment);
 
 		// Get the max level on enchantment tables by maximizing the random
 		// values
 		int enchantability = Items.getEnchantability(item);
 		int maxLevel;
-		if (enchantability == 0 || isTreasure(enchantmentId) || !canApply(enchantmentId, item, true)) {
+		if (enchantability == 0 || isTreasure(enchantment) || !canApply(enchantment, item, true)) {
 			maxLevel = 0;
 		} else {
 			int level = 30 + 1 + enchantability / 4 + enchantability / 4;
 			level += Math.round(level * 0.15f);
-			for (maxLevel = getMaxLevel(enchantmentId); maxLevel >= 1; maxLevel--) {
-				if (level >= getMinEnchantability(enchantmentId, maxLevel)) {
+			for (maxLevel = getMaxLevel(enchantment); maxLevel >= 1; maxLevel--) {
+				if (level >= getMinEnchantability(enchantment, maxLevel)) {
 					break;
 				}
 			}
@@ -496,11 +474,11 @@ public class Enchantments {
 			}
 
 			if (maxOnly) {
-				return Collections.singletonList(new EnchantmentInstance(enchantmentId, maxLevel));
+				return Collections.singletonList(new EnchantmentInstance(enchantment, maxLevel));
 			} else {
 				List<EnchantmentInstance> list = new ArrayList<>();
 				for (int level = 1; level <= maxLevel; level++) {
-					list.add(new EnchantmentInstance(enchantmentId, level));
+					list.add(new EnchantmentInstance(enchantment, level));
 				}
 				return list;
 			}
@@ -517,7 +495,7 @@ public class Enchantments {
 				return Collections.emptyList();
 			}
 
-			return Collections.singletonList(new EnchantmentInstance(enchantmentId, level));
+			return Collections.singletonList(new EnchantmentInstance(enchantment, level));
 		} else {
 			return Collections.emptyList();
 		}
@@ -571,7 +549,7 @@ public class Enchantments {
 
 			// Get a list of allowed enchantments with their max allowed levels
 			List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
-			for (int enchantment : ALL_ENCHANTMENTS) {
+			for (String enchantment : ALL_ENCHANTMENTS) {
 				if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {
 					for (int enchLvl = getMaxLevel(enchantment); enchLvl >= 1; enchLvl--) {
 						if (level >= getMinEnchantability(enchantment, enchLvl)
@@ -596,7 +574,7 @@ public class Enchantments {
 				while (rand.nextInt(50) <= level) {
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
-					int enchantment = enchantmentInstance.enchantment;
+					String enchantment = enchantmentInstance.enchantment;
 					allowedEnchantments.removeIf(it -> !areCompatible(it.enchantment, enchantment));
 
 					if (allowedEnchantments.isEmpty()) {
@@ -618,17 +596,17 @@ public class Enchantments {
 	}
 
 	public static class EnchantmentInstance {
-		public final int enchantment;
+		public final String enchantment;
 		public final int level;
 
-		public EnchantmentInstance(int enchantment, int level) {
+		public EnchantmentInstance(String enchantment, int level) {
 			this.enchantment = enchantment;
 			this.level = level;
 		}
 
 		@Override
 		public int hashCode() {
-			return enchantment + 31 * level;
+			return enchantment.hashCode() + 31 * level;
 		}
 
 		@Override
@@ -637,14 +615,13 @@ public class Enchantments {
 		}
 
 		public boolean equals(EnchantmentInstance other) {
-			return enchantment == other.enchantment && level == other.level;
+			return enchantment.equals(other.enchantment) && level == other.level;
 		}
 
 		@Override
 		public String toString() {
-			String enchName = getName(enchantment);
 			if (level == 1 && getMaxLevel(enchantment) == 1) {
-				return enchName;
+				return enchantment;
 			}
 			String lvlName;
 			switch (level) {
@@ -667,7 +644,7 @@ public class Enchantments {
 				lvlName = String.valueOf(level);
 				break;
 			}
-			return enchName + " " + lvlName;
+			return enchantment + " " + lvlName;
 		}
 	}
 
@@ -677,8 +654,7 @@ public class Enchantments {
 			return null;
 		}
 		weight = rand.nextInt(weight);
-		for (int i = 0, e = list.size(); i < e; i++) {
-			T t = list.get(i);
+		for (T t : list) {
 			weight -= weightExtractor.applyAsInt(t);
 			if (weight < 0) {
 				return t;
