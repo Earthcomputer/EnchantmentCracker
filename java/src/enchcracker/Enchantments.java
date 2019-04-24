@@ -84,13 +84,6 @@ public class Enchantments {
 		INCOMPATIBLE_GROUPS.add(set);
 
 		set = new HashSet<>();
-		set.add(PROTECTION);
-		set.add(FIRE_PROTECTION);
-		set.add(BLAST_PROTECTION);
-		set.add(PROJECTILE_PROTECTION);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
 		set.add(SILK_TOUCH);
 		set.add(LOOTING);
 		INCOMPATIBLE_GROUPS.add(set);
