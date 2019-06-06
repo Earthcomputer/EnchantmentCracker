@@ -10,3 +10,8 @@ native/.settings/
 native/Debug/
 native/Release/
 
+.idea/
+enchcracker.log
+*.iml
+MANIFEST.MF
+/out/
