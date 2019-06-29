@@ -85,7 +85,6 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		}
 		System.arraycopy(toAdd, 0, list, listPos, len);
 		listPos += len;
-		System.out.println("SIZE: " + listPos);
 	}
 
 	@Override
@@ -139,7 +138,6 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 							myList[pos++] = curSeed;
 							if (pos == myList.length) {
-								System.out.println("Adding " + myList.length);
 								synchronized(sync) { addToList(myList, myList.length); }
 								pos = 0;
 							}
