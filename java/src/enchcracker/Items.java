@@ -225,7 +225,7 @@ public class Items {
 				return 9;
 			}
 		}
-		if (isSword(item) || isTool(item)) {
+		if (isSword(item) || isTool(item) || isHoe(item)) {
 			if (item.startsWith("wooden_")) {
 				return 15;
 			}

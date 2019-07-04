@@ -555,7 +555,7 @@ public class Enchantments {
 		return list;
 	}
 
-	private static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
+	public static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
 		List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
 		for (String enchantment : ALL_ENCHANTMENTS) {
 			if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {

@@ -27,6 +27,7 @@ public abstract class AbstractSingleSeedCracker {
 					Thread.currentThread().interrupt();
 				}
 			}
+			firstTime = true;
 		}
 		r.run();
 	}

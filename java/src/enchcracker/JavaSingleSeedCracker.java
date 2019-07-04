@@ -1,8 +1,6 @@
 package enchcracker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -70,6 +68,8 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 	@Override
 	public void resetCracker() {
+		abortRequested.set(true);
+		setFirstTime(true);
 		possibleSeeds.clear();
 		nextPossibleSeeds.clear();
 	}
@@ -78,7 +78,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 	private int listPos;
 	private void addToList(int[] toAdd, int len) {
 		if (len == 0) return;
-		if (listPos + len > list.length) {
+		while (listPos + len >= list.length) {
 			int[] newArr = new int[list.length + 5000000];
 			System.arraycopy(list, 0, newArr, 0, listPos);
 			list = newArr;
@@ -89,6 +89,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 	@Override
 	public void firstInput(int bookshelves, int slot1, int slot2, int slot3) {
+		abortRequested.set(false);
 		final int threadCount = Runtime.getRuntime().availableProcessors() - 1; // always leave one for OS
 		final int blockSize = Integer.MAX_VALUE / 20 / threadCount - 1;
 		final AtomicInteger seed = new AtomicInteger(Integer.MIN_VALUE);
@@ -115,6 +116,8 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 				final SimpleRandom myRNG = new SimpleRandom();
 
 				while (true) {
+					if (abortRequested.get()) return;
+
 					int curSeed = seed.get();
 					final int last = curSeed + blockSize;
 					if (last < curSeed) break; // overflow
@@ -152,8 +155,15 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		while (true) {
 			if (abortRequested.get()) {
+				while (threads.size() > 0) {
+					try {
+						threads.remove(0).join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				abortRequested.set(false);
-				break;
+				return;
 			}
 			int cur = seed.get();
 			if (cur + blockSize < cur) break;
@@ -183,7 +193,9 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		}
 
 		addToList(lastFew, lastPos);
-		for (int a = 0; a < listPos; a++) possibleSeeds.add(list[a]); // no faster way?
+		possibleSeeds.ensureCapacity(listPos);
+		for (int a = 0; ++a != listPos;) possibleSeeds.add(list[a]); // no faster way?
+		abortRequested.set(false);
 	}
 
 	@Override
@@ -194,27 +206,25 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		for (int i = 0, e = possibleSeeds.size(); i < e; i++) {
 			// Occasionally update seeds searched for GUI
-			if (i % 100000000 == 0) {
+			if (i % 250000 == 0) {
 				if (abortRequested.get()) {
 					abortRequested.set(false);
-					break;
+					return;
 				}
 				seedsSearched.set(i);
 			}
 
 			// Test the seed with the new information
-			rand.setSeed(possibleSeeds.get(i));
+			int s = possibleSeeds.get(i);
+			rand.setSeed(s);
 			if (getLevelsSlot1(rand, bookshelves) == slot1) {
 				if (getLevelsSlot2(rand, bookshelves) == slot2) {
 					if (getLevelsSlot3(rand, bookshelves) == slot3) {
-						synchronized (possibleSeeds) {
-							nextPossibleSeeds.add(possibleSeeds.get(i));
-						}
+						nextPossibleSeeds.add(s);
 					}
 				}
 			}
 		}
-
 		possibleSeeds.clear();
 		possibleSeeds.addAll(nextPossibleSeeds);
 	}
