@@ -287,7 +287,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 							switch (possibleSeeds) {
 								case 0:
 									progressBar.setText("No possible seeds");
-									progressBar.setProgress(0f);
+									progressBar.setProgress(Float.NaN);
 									break;
 								case 1:
 									progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));

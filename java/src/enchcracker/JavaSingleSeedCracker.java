@@ -194,7 +194,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		addToList(lastFew, lastPos);
 		possibleSeeds.ensureCapacity(listPos);
-		for (int a = 0; ++a != listPos;) possibleSeeds.add(list[a]); // no faster way?
+		for (int a = 0; a != listPos; a++) possibleSeeds.add(list[a]); // no faster way?
 		abortRequested.set(false);
 	}
 
