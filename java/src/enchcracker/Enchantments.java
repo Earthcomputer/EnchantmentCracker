@@ -113,6 +113,13 @@ public class Enchantments {
 		set.add(PIERCING);
 		INCOMPATIBLE_GROUPS.add(set);
 
+		set = new HashSet<>();
+		set.add(PROTECTION);
+		set.add(BLAST_PROTECTION);
+		set.add(FIRE_PROTECTION);
+		set.add(PROJECTILE_PROTECTION);
+		INCOMPATIBLE_GROUPS.add(set);
+
 		for (Field field : Enchantments.class.getDeclaredFields()) {
 			if (field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
 				if (field.getType() == String.class) {
