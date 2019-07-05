@@ -415,7 +415,7 @@ public class Enchantments {
 		case EFFICIENCY:
 		case POWER:
 		case PIERCING:
-			return 30;
+			return 10;
 		case FIRE_PROTECTION:
 		case FEATHER_FALLING:
 		case PROJECTILE_PROTECTION:
@@ -425,7 +425,7 @@ public class Enchantments {
 		case UNBREAKING:
 		case LOYALTY:
 		case QUICK_CHARGE:
-			return 10;
+			return 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
 		case AQUA_AFFINITY:
@@ -443,7 +443,7 @@ public class Enchantments {
 		case IMPALING:
 		case RIPTIDE:
 		case MULTISHOT:
-			return 3;
+			return 2;
 		case THORNS:
 		case BINDING_CURSE:
 		case SILK_TOUCH:
@@ -555,22 +555,6 @@ public class Enchantments {
 		return list;
 	}
 
-	private static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
-		List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
-		for (String enchantment : ALL_ENCHANTMENTS) {
-			if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {
-				for (int enchLvl = getMaxLevel(enchantment); enchLvl >= 1; enchLvl--) {
-					if (level >= getMinEnchantability(enchantment, enchLvl)
-							&& level <= getMaxEnchantability(enchantment, enchLvl)) {
-						allowedEnchantments.add(new EnchantmentInstance(enchantment, enchLvl));
-						break;
-					}
-				}
-			}
-		}
-		return allowedEnchantments;
-	}
-
 	public static List<EnchantmentInstance> addRandomEnchantments(Random rand, String item, int level,
 			boolean treasure) {
 		int enchantability = Items.getEnchantability(item);
@@ -587,7 +571,18 @@ public class Enchantments {
 			}
 
 			// Get a list of allowed enchantments with their max allowed levels
-			List<EnchantmentInstance> allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
+			List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
+			for (String enchantment : ALL_ENCHANTMENTS) {
+				if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {
+					for (int enchLvl = getMaxLevel(enchantment); enchLvl >= 1; enchLvl--) {
+						if (level >= getMinEnchantability(enchantment, enchLvl)
+								&& level <= getMaxEnchantability(enchantment, enchLvl)) {
+							allowedEnchantments.add(new EnchantmentInstance(enchantment, enchLvl));
+							break;
+						}
+					}
+				}
+			}
 
 			// allowedEnchantments.forEach(ench -> System.out.println("Allowed:
 			// " + ench));
@@ -600,16 +595,10 @@ public class Enchantments {
 
 				// Get optional extra enchantments
 				while (rand.nextInt(50) <= level) {
-					// 1.14 enchantment nerf
-					level = level * 4 / 5 + 1;
-					allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
-
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
-					for (EnchantmentInstance ench : enchantments) {
-						String enchantment = ench.enchantment;
-						allowedEnchantments.removeIf(it -> !areCompatible(it.enchantment, enchantment));
-					}
+					String enchantment = enchantmentInstance.enchantment;
+					allowedEnchantments.removeIf(it -> !areCompatible(it.enchantment, enchantment));
 
 					if (allowedEnchantments.isEmpty()) {
 						// no enchantments left
