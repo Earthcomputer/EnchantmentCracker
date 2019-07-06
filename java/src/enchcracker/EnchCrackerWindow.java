@@ -31,6 +31,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		return Thread.currentThread().getContextClassLoader().getResource("data/"+name);
 	}
 
+	private String verText() {
+		return "V1.4";
+	}
+
 	private JPanel contentPane;
 	private JTextField bookshelvesTextField;
 	private JTextField slot1TextField;
@@ -745,8 +749,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		aboutPane.setOpaque(false);
 		contentPane.add(aboutPane, "About");
 		aboutPane.setLayout(new BoxLayout(aboutPane, BoxLayout.Y_AXIS));
+
 		JLabel aboutText1 = new JLabel(
-			"<html>Enchantment Cracker<br>Original version by Earthcomputer<br>Speed and UI improvements by Hexicube<br><br>Tutorial and Explanation:</html>"
+			"<html>Enchantment Cracker "+verText()+"<br>Original version by Earthcomputer<br>Speed and UI improvements by Hexicube<br><br>Tutorial and Explanation:</html>"
 		);
 		aboutPane.add(aboutText1);
 		JLabel youtubePage = new JLabel("<html><a href=\\\"https://youtu.be/hfiTZF0hlzw\\\">Minecraft, Vanilla Survival: Cracking the Enchantment Seed</a></html>");
@@ -761,9 +766,24 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		aboutPane.add(youtubePage);
 
 		JLabel aboutText2 = new JLabel(
-				"<html>GitHub page:</html>"
+				"<html><br>Imgur album:</html>"
 		);
 		aboutPane.add(aboutText2);
+		JLabel imgurPage = new JLabel("<html><a href=\\\"https://imgur.com/a/oaxCC5x\\\">MC Enchantment Cracker Tutorial</a></html>");
+		imgurPage.setToolTipText("https://imgur.com/a/oaxCC5x");
+		imgurPage.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				browse("https://imgur.com/a/oaxCC5x");
+			}
+		});
+		imgurPage.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		aboutPane.add(imgurPage);
+
+		JLabel aboutText3 = new JLabel(
+				"<html><br>GitHub page:</html>"
+		);
+		aboutPane.add(aboutText3);
 		JLabel githubPage = new JLabel(
 				"<html><a href = \"https://github.com/Earthcomputer/EnchantmentCracker\">Earthcomputer/EnchantmentCracker</a></html>");
 		githubPage.setToolTipText("https://github.com/Earthcomputer/EnchantmentCracker");
@@ -776,10 +796,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		githubPage.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		aboutPane.add(githubPage);
 
-		JLabel aboutText3 = new JLabel(
+		JLabel aboutText4 = new JLabel(
 				"<html><br>Please report any bugs you find on the issue tracker.<br>Make sure to include the enchcracker.log file.</html>"
 		);
-		aboutPane.add(aboutText3);
+		aboutPane.add(aboutText4);
 
 		Insets i = getInsets();
 		Insets i2 = rootPane.getBorder().getBorderInsets(this);

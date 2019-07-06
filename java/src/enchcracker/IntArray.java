@@ -1,7 +1,5 @@
 package enchcracker;
 
-import java.util.ArrayList;
-
 public class IntArray {
     // more efficient implementation of ArrayList<Integer>
 
@@ -22,11 +20,11 @@ public class IntArray {
     }
 
     public IntArray() {
-        clear();
+        list = new int[1000000];
     }
 
     public void clear() {
-        list = new int[1000000];
+        // array size is not reduced to reduce number of allocations
         size = 0;
     }
 

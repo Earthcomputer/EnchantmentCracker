@@ -16,3 +16,4 @@ enchcracker.log
 MANIFEST.MF
 /out/
 *.1
+*.lck
