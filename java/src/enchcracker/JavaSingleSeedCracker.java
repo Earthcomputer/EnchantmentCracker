@@ -33,7 +33,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		}
 	}
 
-	private ArrayList<Integer> possibleSeeds = new ArrayList<>();
+	private IntArray possibleSeeds = new IntArray();
 	private ArrayList<Integer> nextPossibleSeeds = new ArrayList<>();
 	private AtomicLong seedsSearched = new AtomicLong(0);
 	private AtomicBoolean abortRequested = new AtomicBoolean(false);
@@ -62,7 +62,6 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 	@Override
 	public boolean initCracker() {
-		possibleSeeds.ensureCapacity(1 << 27);
 		return true;
 	}
 
@@ -193,8 +192,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		}
 
 		addToList(lastFew, lastPos);
-		possibleSeeds.ensureCapacity(listPos);
-		for (int a = 0; a != listPos; a++) possibleSeeds.add(list[a]); // no faster way?
+		possibleSeeds.addAll(list, listPos);
 		abortRequested.set(false);
 	}
 
