@@ -30,15 +30,21 @@ public class IntArray {
         size = 0;
     }
 
+    public void add(int i) {
+        if (list.length == size) {
+            int[] newArr = new int[list.length + 1000000];
+            System.arraycopy(list, 0, newArr, 0, size);
+            list = newArr;
+        }
+        list[size++] = i;
+    }
+
     public void addAll(int[] values, int amt) {
         addToList(values, amt);
     }
 
-    public void addAll(ArrayList<Integer> nextPossibleSeeds) {
-        // assumed to be a small quantity compared to other addAll, so it's inefficient
-        int[] toAdd = new int[nextPossibleSeeds.size()];
-        for (int a = 0; a < toAdd.length; a++) toAdd[a] = nextPossibleSeeds.get(a);
-        addAll(toAdd, toAdd.length);
+    public void addAll(IntArray values) {
+        addToList(values.list, values.size);
     }
 
     public int size() { return size; }
