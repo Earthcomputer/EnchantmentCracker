@@ -1,4 +1,7 @@
-package enchcracker;
+package enchcracker.cracker;
+
+import enchcracker.IntArray;
+import enchcracker.SimpleRandom;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -6,34 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
-	// more efficient implementation of java's random class for this specific use-case
-	private static long multiplier = 0x5DEECE66DL;
-	private static long mask = (1L << 48) - 1;
-	private class SimpleRandom {
-		private long seed = 0;
-		void setSeed(long seed) {
-			this.seed = (seed ^ multiplier) & mask;
-		}
-
-		// Always next(31) - inlined
-		private int next() {
-			seed = (seed * multiplier + 0xBL) & mask;
-			return (int)(seed >>> 17);
-		}
-
-		int nextInt(int bound) {
-			int r = next();
-			int m = bound - 1;
-			if ((bound & m) == 0)  // i.e., bound is a power of 2
-				r = (int)((bound * (long)r) >> 31);
-			else {
-				int u = r;
-				while (u - (r = u % bound) + m < 0) u = next();
-			}
-			return r;
-		}
-	}
-
 	private final IntArray possibleSeeds = new IntArray();
 	private final AtomicLong seedsSearched = new AtomicLong(0);
 	private final AtomicBoolean abortRequested = new AtomicBoolean(false);

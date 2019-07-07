@@ -1,4 +1,4 @@
-package enchcracker;
+package enchcracker.cracker;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

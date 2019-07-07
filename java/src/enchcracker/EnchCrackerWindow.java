@@ -1,5 +1,6 @@
 package enchcracker;
 
+import enchcracker.cracker.*;
 import enchcracker.swing.*;
 
 import java.awt.*;
@@ -14,10 +15,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.text.*;
 
-@SuppressWarnings("all")
-/**
- * This file is mostly generated
- */
 public class EnchCrackerWindow extends StyledFrameMinecraft {
 	public static URL getFile(String name) {
 		File f = new File("data/"+name);
@@ -135,9 +132,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		return res;
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	private static CardLayout cards = new CardLayout();
 	public EnchCrackerWindow() {
 		super(cards, new String[]{"FindSeed", "Manip", "About"}, new String[]{"Enchantment Cracker", "Enchantment Calculator", "About"});
@@ -191,20 +185,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				super.replace(fb, offset, length, string, attr);
 			}
 		};
-		DocumentFilter hexFilter2 = new DocumentFilter() {
-			@Override
-			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-				if (!string.matches("[\\da-fA-F]*")) return;
-				if (fb.getDocument().getLength() + string.length() > 12) return;
-				super.insertString(fb, offset, string, attr);
-			}
-			@Override
-			public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr) throws BadLocationException {
-				if (!string.matches("[\\da-fA-F]*")) return;
-				if (fb.getDocument().getLength() - length + string.length() > 12) return;
-				super.replace(fb, offset, length, string, attr);
-			}
-		};
 
 		bookshelvesTextField = new FixedTextField();
 		bookshelvesTextField.setFont(MCFont.standardFont);
@@ -231,151 +211,148 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		slot3TextField.setBounds(290, 206, 30, 20);
 
 		progressBar.setToolTipText("Use this information to narrow down the possible XP seeds");
-		progressBar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int bookshelves, slot1, slot2, slot3;
-				bookshelvesTextField.setBackground(Color.white);
-				slot1TextField.setBackground(Color.white);
-				slot2TextField.setBackground(Color.white);
-				slot3TextField.setBackground(Color.white);
-				try {
-					bookshelves = Integer.parseInt(bookshelvesTextField.getText());
-					slot1 = Integer.parseInt(slot1TextField.getText());
-					slot2 = Integer.parseInt(slot2TextField.getText());
-					slot3 = Integer.parseInt(slot3TextField.getText());
-				} catch (NumberFormatException e) {
-					Log.info("Add info failed, fields had invalid numbers");
-					return;
-				}
-
-				if (bookshelves < 0 || bookshelves > 15) {
-					Log.info("Add info failed, bookshelf count invalid");
-					bookshelvesTextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
-					return;
-				}
-
-				if (slot1 < 0 || slot1 > 30) {
-					Log.info("Add info failed, slot 1 count invalid");
-					slot1TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
-					return;
-				}
-				
-				if (slot2 < 0 || slot2 > 30) {
-					Log.info("Add info failed, slot 2 count invalid");
-					slot2TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
-					return;
-				}
-				
-				if (slot3 < 0 || slot3 > 30) {
-					Log.info("Add info failed, slot 3 count invalid");
-					slot3TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
-					return;
-				}
-
-				Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
-
-				singleSeedCracker.abortAndThen(() -> {
-					// First time is different because otherwise we have to store all 2^32 initial seeds
-					boolean firstTime = singleSeedCracker.isFirstTime();
-					singleSeedCracker.setFirstTime(false);
-
-					// Start brute-forcing thread
-					Thread thread;
-					if (firstTime) {
-						thread = new Thread(() -> {
-							progressBar.setProgress(0f);
-							singleSeedCracker.firstInput(bookshelves, slot1, slot2, slot3);
-							int possibleSeeds = singleSeedCracker.getPossibleSeeds();
-							Log.info("Reduced possible seeds to " + possibleSeeds);
-							singleSeedCracker.setRunning(false);
-							switch (possibleSeeds) {
-								case 0:
-									progressBar.setText("No possible seeds");
-									progressBar.setProgress(Float.NaN);
-									break;
-								case 1:
-									progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-									progressBar.setProgress(0f);
-									if (xpSeed1TextField.getText().isEmpty()) {
-										xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
-									} else if (xpSeed2TextField.getText().isEmpty()) {
-										xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
-									}
-									break;
-								default:
-									progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
-									progressBar.setProgress(-1f);
-									break;
-							}
-						});
-					} else {
-						thread = new Thread(() -> {
-							singleSeedCracker.addInput(bookshelves, slot1, slot2, slot3);
-							int possibleSeeds = singleSeedCracker.getPossibleSeeds();
-							Log.info("Reduced possible seeds to " + possibleSeeds);
-							singleSeedCracker.setRunning(false);
-							switch (possibleSeeds) {
-								case 0:
-									progressBar.setText("No possible seeds");
-									progressBar.setProgress(Float.NaN);
-									break;
-								case 1:
-									progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
-									progressBar.setProgress(Float.NaN);
-									if (xpSeed1TextField.getText().isEmpty()) {
-										xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
-									} else if (xpSeed2TextField.getText().isEmpty()) {
-										xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
-									}
-									break;
-								default:
-									progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
-									progressBar.setProgress(-1f);
-									break;
-							}
-						});
-					}
-					thread.setDaemon(true);
-					singleSeedCracker.setRunning(true);
-					thread.start();
-
-					// Start progress bar thread
-					if (firstTime) {
-						thread = new Thread(() -> {
-							while (singleSeedCracker.isRunning()) {
-								long seedsSearched = singleSeedCracker.getSeedsSearched();
-								progressBar.setProgress((float)singleSeedCracker.getSeedsSearched() / 4294967296f);
-								try {
-									Thread.sleep(50);
-								} catch (InterruptedException e) {
-									Thread.currentThread().interrupt();
-								}
-							}
-							bookshelvesTextField.setText("");
-							slot1TextField.setText("");
-							slot2TextField.setText("");
-							slot3TextField.setText("");
-						});
-					} else {
-						thread = new Thread(() -> {
-							while (singleSeedCracker.isRunning()) {
-								progressBar.setProgress((float)singleSeedCracker.getSeedsSearched() / (float)singleSeedCracker.getPossibleSeeds());
-								try {
-									Thread.sleep(50);
-								} catch (InterruptedException e) {
-									Thread.currentThread().interrupt();
-								}
-							}
-							bookshelvesTextField.setText("");
-							slot1TextField.setText("");
-							slot2TextField.setText("");
-							slot3TextField.setText("");
-						});
-					}
-					thread.setDaemon(true);
-					thread.start();
-				});
+		progressBar.addActionListener(event -> {
+			int bookshelves, slot1, slot2, slot3;
+			bookshelvesTextField.setBackground(Color.white);
+			slot1TextField.setBackground(Color.white);
+			slot2TextField.setBackground(Color.white);
+			slot3TextField.setBackground(Color.white);
+			try {
+				bookshelves = Integer.parseInt(bookshelvesTextField.getText());
+				slot1 = Integer.parseInt(slot1TextField.getText());
+				slot2 = Integer.parseInt(slot2TextField.getText());
+				slot3 = Integer.parseInt(slot3TextField.getText());
+			} catch (NumberFormatException e) {
+				Log.info("Add info failed, fields had invalid numbers");
+				return;
 			}
+
+			if (bookshelves < 0 || bookshelves > 15) {
+				Log.info("Add info failed, bookshelf count invalid");
+				bookshelvesTextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
+				return;
+			}
+
+			if (slot1 < 0 || slot1 > 30) {
+				Log.info("Add info failed, slot 1 count invalid");
+				slot1TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
+				return;
+			}
+
+			if (slot2 < 0 || slot2 > 30) {
+				Log.info("Add info failed, slot 2 count invalid");
+				slot2TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
+				return;
+			}
+
+			if (slot3 < 0 || slot3 > 30) {
+				Log.info("Add info failed, slot 3 count invalid");
+				slot3TextField.setBackground(new Color(1.0F, 0.3F, 0.0F));
+				return;
+			}
+
+			Log.info("Added info, b = " + bookshelves + ", s1 = " + slot1 + ", s2 = " + slot2 + ", s3 = " + slot3);
+
+			singleSeedCracker.abortAndThen(() -> {
+				// First time is different because otherwise we have to store all 2^32 initial seeds
+				boolean firstTime = singleSeedCracker.isFirstTime();
+				singleSeedCracker.setFirstTime(false);
+
+				// Start brute-forcing thread
+				Thread thread;
+				if (firstTime) {
+					thread = new Thread(() -> {
+						progressBar.setProgress(0f);
+						singleSeedCracker.firstInput(bookshelves, slot1, slot2, slot3);
+						int possibleSeeds = singleSeedCracker.getPossibleSeeds();
+						Log.info("Reduced possible seeds to " + possibleSeeds);
+						singleSeedCracker.setRunning(false);
+						switch (possibleSeeds) {
+							case 0:
+								progressBar.setText("No possible seeds");
+								progressBar.setProgress(Float.NaN);
+								break;
+							case 1:
+								progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								progressBar.setProgress(0f);
+								if (xpSeed1TextField.getText().isEmpty()) {
+									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
+								} else if (xpSeed2TextField.getText().isEmpty()) {
+									xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
+								}
+								break;
+							default:
+								progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
+								progressBar.setProgress(-1f);
+								break;
+						}
+					});
+				} else {
+					thread = new Thread(() -> {
+						singleSeedCracker.addInput(bookshelves, slot1, slot2, slot3);
+						int possibleSeeds = singleSeedCracker.getPossibleSeeds();
+						Log.info("Reduced possible seeds to " + possibleSeeds);
+						singleSeedCracker.setRunning(false);
+						switch (possibleSeeds) {
+							case 0:
+								progressBar.setText("No possible seeds");
+								progressBar.setProgress(Float.NaN);
+								break;
+							case 1:
+								progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								progressBar.setProgress(Float.NaN);
+								if (xpSeed1TextField.getText().isEmpty()) {
+									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
+								} else if (xpSeed2TextField.getText().isEmpty()) {
+									xpSeed2TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
+								}
+								break;
+							default:
+								progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
+								progressBar.setProgress(-1f);
+								break;
+						}
+					});
+				}
+				thread.setDaemon(true);
+				singleSeedCracker.setRunning(true);
+				thread.start();
+
+				// Start progress bar thread
+				if (firstTime) {
+					thread = new Thread(() -> {
+						while (singleSeedCracker.isRunning()) {
+							progressBar.setProgress((float)singleSeedCracker.getSeedsSearched() / 4294967296f);
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+							}
+						}
+						bookshelvesTextField.setText("");
+						slot1TextField.setText("");
+						slot2TextField.setText("");
+						slot3TextField.setText("");
+					});
+				} else {
+					thread = new Thread(() -> {
+						while (singleSeedCracker.isRunning()) {
+							progressBar.setProgress((float)singleSeedCracker.getSeedsSearched() / (float)singleSeedCracker.getPossibleSeeds());
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+							}
+						}
+						bookshelvesTextField.setText("");
+						slot1TextField.setText("");
+						slot2TextField.setText("");
+						slot3TextField.setText("");
+					});
+				}
+				thread.setDaemon(true);
+				thread.start();
+			});
 		});
 		ProgressButton btnCalculate = new ProgressButton("button");
 
@@ -384,21 +361,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		btnResetCracker.setBounds(findSeedPanel.getSize().width - resetW, findSeedPanel.getSize().height - progressBar.getPreferredSize().height, resetW, progressBar.getPreferredSize().height);
 		findSeedPanel.add(btnResetCracker);
 		btnResetCracker.setToolTipText("Reset the XP seed cracker so a new XP seed can be cracked");
-		btnResetCracker.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Log.info("Reset the cracker");
-				singleSeedCracker.abortAndThen(() -> {
-					singleSeedCracker.resetCracker();
-					bookshelvesTextField.setText("");
-					slot1TextField.setText("");
-					slot2TextField.setText("");
-					slot3TextField.setText("");
-					progressBar.setText("Check");
-					progressBar.setProgress(-1f);
-					btnCalculate.setText("Calculate Seed");
-					btnCalculate.setProgress(-1f);
-				});
-			}
+		btnResetCracker.addActionListener(event -> {
+			Log.info("Reset the cracker");
+			singleSeedCracker.abortAndThen(() -> {
+				singleSeedCracker.resetCracker();
+				bookshelvesTextField.setText("");
+				slot1TextField.setText("");
+				slot2TextField.setText("");
+				slot3TextField.setText("");
+				progressBar.setText("Check");
+				progressBar.setProgress(-1f);
+				btnCalculate.setText("Calculate Seed");
+				btnCalculate.setProgress(-1f);
+			});
 		});
 
 		JLabel xpl1 = new JLabel("XP Seed 1");
@@ -424,44 +399,42 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findSeedPanel.add(xpSeed2TextField);
 
 		btnCalculate.setText("Calculate Seed");
-		btnCalculate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				boolean found;
-				int xpSeed1, xpSeed2;
-				try {
-					xpSeed1 = Integer.parseUnsignedInt(xpSeed1TextField.getText(), 16);
-				} catch (NumberFormatException e) {
-					Log.info("Calculate player seed failed, XP seed 1 invalid");
-					return;
+		btnCalculate.addActionListener(event -> {
+			boolean found;
+			int xpSeed1, xpSeed2;
+			try {
+				xpSeed1 = Integer.parseUnsignedInt(xpSeed1TextField.getText(), 16);
+			} catch (NumberFormatException e) {
+				Log.info("Calculate player seed failed, XP seed 1 invalid");
+				return;
+			}
+			try {
+				xpSeed2 = Integer.parseUnsignedInt(xpSeed2TextField.getText(), 16);
+			} catch (NumberFormatException e) {
+				Log.info("Calculate player seed failed, XP seed 2 invalid");
+				return;
+			}
+			Log.info("Calculating player seed with " + Integer.toHexString(xpSeed1) + ", "
+					+ Integer.toHexString(xpSeed2));
+			// Brute force the low bits
+			long seed1High = ((long) xpSeed1 << 16) & 0x0000_ffff_ffff_0000L;
+			long seed2High = ((long) xpSeed2 << 16) & 0x0000_ffff_ffff_0000L;
+			found = false;
+			for (int seed1Low = 0; seed1Low < 65536; seed1Low++) {
+				if ((((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_0000L) == seed2High) {
+					playerSeed = ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+					found = true;
+					break;
 				}
-				try {
-					xpSeed2 = Integer.parseUnsignedInt(xpSeed2TextField.getText(), 16);
-				} catch (NumberFormatException e) {
-					Log.info("Calculate player seed failed, XP seed 2 invalid");
-					return;
-				}
-				Log.info("Calculating player seed with " + Integer.toHexString(xpSeed1) + ", "
-						+ Integer.toHexString(xpSeed2));
-				// Brute force the low bits
-				long seed1High = ((long) xpSeed1 << 16) & 0x0000_ffff_ffff_0000L;
-				long seed2High = ((long) xpSeed2 << 16) & 0x0000_ffff_ffff_0000L;
-				found = false;
-				for (int seed1Low = 0; seed1Low < 65536; seed1Low++) {
-					if ((((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_0000L) == seed2High) {
-						playerSeed = ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					Log.info("Played seed calculated as " + Long.toHexString(playerSeed));
-					btnCalculate.setText(String.format("%012X", playerSeed));
-					btnCalculate.setProgress(Float.POSITIVE_INFINITY);
-				} else {
-					Log.info("No player seed found");
-					btnCalculate.setText("Fail!");
-					btnCalculate.setProgress(Float.NaN);
-				}
+			}
+			if (found) {
+				Log.info("Played seed calculated as " + Long.toHexString(playerSeed));
+				btnCalculate.setText(String.format("%012X", playerSeed));
+				btnCalculate.setProgress(Float.POSITIVE_INFINITY);
+			} else {
+				Log.info("No player seed found");
+				btnCalculate.setText("Fail!");
+				btnCalculate.setProgress(Float.NaN);
 			}
 		});
 		btnCalculate.setBounds(0, 84, 152, 22);
@@ -520,7 +493,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				if (level < 1) {
 					level = 1;
 				}
-				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList();
+				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
 				while (level > 0) {
 					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
 					for (Enchantments.EnchantmentInstance inst : list) {
@@ -567,129 +540,127 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.setText("Calculate");
 		findEnchantment.setToolTipText("<html>Press to calculate how many items you <i>would</i> need to throw to get these enchantments</html>");
 		ProgressButton btnDone = new ProgressButton("button");
-		findEnchantment.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				long seed = playerSeed;
-				if (itemToEnch[0] == null) return;
+		findEnchantment.addActionListener(event -> {
+			long seed = playerSeed;
+			if (itemToEnch[0] == null) return;
 
-				Log.info("Calculating items to throw");
-				Log.info("Item: " + itemToEnch[0]);
-				ArrayList<Enchantments.EnchantmentInstance> wantedEnch = new ArrayList();
-				ArrayList<Enchantments.EnchantmentInstance> unwantedEnch = new ArrayList();
-				for (Component c : enchList.getComponents()) {
-					if (c instanceof MultiBtnPanel) {
-						MultiBtnPanel btns = (MultiBtnPanel)c;
-						if (btns.id != null) {
-							int v = btns.getSelection();
-							if (v != 0) {
-								if (v == -1) unwantedEnch.add(new Enchantments.EnchantmentInstance(btns.id, 1));
-								else wantedEnch.add(new Enchantments.EnchantmentInstance(btns.id, v));
-							}
+			Log.info("Calculating items to throw");
+			Log.info("Item: " + itemToEnch[0]);
+			ArrayList<Enchantments.EnchantmentInstance> wantedEnch = new ArrayList<>();
+			ArrayList<Enchantments.EnchantmentInstance> unwantedEnch = new ArrayList<>();
+			for (Component c : enchList.getComponents()) {
+				if (c instanceof MultiBtnPanel) {
+					MultiBtnPanel btns = (MultiBtnPanel)c;
+					if (btns.id != null) {
+						int v = btns.getSelection();
+						if (v != 0) {
+							if (v == -1) unwantedEnch.add(new Enchantments.EnchantmentInstance(btns.id, 1));
+							else wantedEnch.add(new Enchantments.EnchantmentInstance(btns.id, v));
 						}
 					}
 				}
-				Log.info("Wanted list:");
-				for (Enchantments.EnchantmentInstance inst : wantedEnch) {
-					Log.info("  " + inst);
-				}
-				Log.info("Not wanted list:");
-				for (Enchantments.EnchantmentInstance inst : unwantedEnch) {
-					Log.info("  " + inst);
-				}
+			}
+			Log.info("Wanted list:");
+			for (Enchantments.EnchantmentInstance inst : wantedEnch) {
+				Log.info("  " + inst);
+			}
+			Log.info("Not wanted list:");
+			for (Enchantments.EnchantmentInstance inst : unwantedEnch) {
+				Log.info("  " + inst);
+			}
 
-				if (Items.getEnchantability(itemToEnch[0]) == 0) {
-					return;
-				}
+			if (Items.getEnchantability(itemToEnch[0]) == 0) {
+				return;
+			}
 
-				// -2: not found; -1: no dummy enchantment needed; >= 0: number of times needed
-				// to throw out item before dummy enchantment
-				int timesNeeded = -2;
-				int bookshelvesNeeded = 0;
-				int slot = 0;
-				int[] enchantLevels = new int[3];
+			// -2: not found; -1: no dummy enchantment needed; >= 0: number of times needed
+			// to throw out item before dummy enchantment
+			int timesNeeded = -2;
+			int bookshelvesNeeded = 0;
+			int slot = 0;
+			int[] enchantLevels = new int[3];
 
-				outerLoop: for (int i = -1; i < 10000; i++) {
-					int xpSeed;
-					if (i == -1) {
-						// XP seed will be the current seed, because there is no dummy enchant
-						xpSeed = (int) (seed >>> 16);
-					} else {
-						// XP seed will be the current seed, advanced by one because of the dummy enchant
-						xpSeed = (int) (((seed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL) >>> 16);
-					}
-
-					Random rand = new Random();
-					for (bookshelvesNeeded = 0; bookshelvesNeeded <= 15; bookshelvesNeeded++) {
-						rand.setSeed(xpSeed);
-						// Calculate all slot levels
-						// Important they're done in a row like this because RNG is not reset in between
-						for (slot = 0; slot < 3; slot++) {
-							int level = Enchantments.calcEnchantmentTableLevel(rand, slot, bookshelvesNeeded, itemToEnch[0]);
-							if (level < slot + 1) {
-								level = 0;
-							}
-							enchantLevels[slot] = level;
-						}
-
-						slotLoop: for (slot = 0; slot < 3; slot++) {
-							// Get enchantments (changes RNG seed)
-							List<Enchantments.EnchantmentInstance> enchantments = Enchantments
-									.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot]);
-
-							// Does this list contain all the enchantments we want?
-							for (Enchantments.EnchantmentInstance inst : wantedEnch) {
-								boolean found = false;
-								for (Enchantments.EnchantmentInstance inst2 : enchantments) {
-									if (inst.enchantment != inst2.enchantment) continue;
-									if (inst.level > inst2.level) continue slotLoop;
-									found = true;
-									break;
-								}
-								if (!found) continue slotLoop;
-							}
-
-							// Does this list contain none of the enchantments we don't want?
-							for (Enchantments.EnchantmentInstance inst : unwantedEnch) {
-								for (Enchantments.EnchantmentInstance inst2 : enchantments) {
-									if (inst.enchantment != inst2.enchantment) continue;
-									continue slotLoop;
-								}
-							}
-
-							timesNeeded = i;
-							break outerLoop;
-						}
-					}
-
-					// Simulate an item throw
-					if (i != -1) {
-						for (int j = 0; j < 4; j++) {
-							seed = (seed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-						}
-					}
-				}
-
-				EnchCrackerWindow.this.timesNeeded = timesNeeded;
-				if (timesNeeded == -2) {
-					outDrop.setText("No match");
-					outBook.setText("-");
-					outSlot.setText("-");
-					Log.info("Impossible combination");
-					btnDone.setProgress(Float.NaN);
-				} else if (timesNeeded == -1) {
-					outDrop.setText("No dummy");
-					outBook.setText(""+bookshelvesNeeded);
-					outSlot.setText(""+(slot + 1));
-					Log.info("No dummy, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
-					btnDone.setProgress(-1);
+			outerLoop: for (int i = -1; i < 10000; i++) {
+				int xpSeed;
+				if (i == -1) {
+					// XP seed will be the current seed, because there is no dummy enchant
+					xpSeed = (int) (seed >>> 16);
 				} else {
-					if (timesNeeded > 63) outDrop.setText("64x" + (timesNeeded / 64) + " + " + (timesNeeded % 64));
-					else outDrop.setText(""+timesNeeded);
-					outBook.setText(""+bookshelvesNeeded);
-					outSlot.setText(""+(slot + 1));
-					Log.info("Throw " + timesNeeded + " items, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
-					btnDone.setProgress(-1);
+					// XP seed will be the current seed, advanced by one because of the dummy enchant
+					xpSeed = (int) (((seed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL) >>> 16);
 				}
+
+				Random rand = new Random();
+				for (bookshelvesNeeded = 0; bookshelvesNeeded <= 15; bookshelvesNeeded++) {
+					rand.setSeed(xpSeed);
+					// Calculate all slot levels
+					// Important they're done in a row like this because RNG is not reset in between
+					for (slot = 0; slot < 3; slot++) {
+						int level = Enchantments.calcEnchantmentTableLevel(rand, slot, bookshelvesNeeded, itemToEnch[0]);
+						if (level < slot + 1) {
+							level = 0;
+						}
+						enchantLevels[slot] = level;
+					}
+
+					slotLoop: for (slot = 0; slot < 3; slot++) {
+						// Get enchantments (changes RNG seed)
+						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
+								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot]);
+
+						// Does this list contain all the enchantments we want?
+						for (Enchantments.EnchantmentInstance inst : wantedEnch) {
+							boolean found = false;
+							for (Enchantments.EnchantmentInstance inst2 : enchantments) {
+								if (inst.enchantment != inst2.enchantment) continue;
+								if (inst.level > inst2.level) continue slotLoop;
+								found = true;
+								break;
+							}
+							if (!found) continue slotLoop;
+						}
+
+						// Does this list contain none of the enchantments we don't want?
+						for (Enchantments.EnchantmentInstance inst : unwantedEnch) {
+							for (Enchantments.EnchantmentInstance inst2 : enchantments) {
+								if (inst.enchantment != inst2.enchantment) continue;
+								continue slotLoop;
+							}
+						}
+
+						timesNeeded = i;
+						break outerLoop;
+					}
+				}
+
+				// Simulate an item throw
+				if (i != -1) {
+					for (int j = 0; j < 4; j++) {
+						seed = (seed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+					}
+				}
+			}
+
+			EnchCrackerWindow.this.timesNeeded = timesNeeded;
+			if (timesNeeded == -2) {
+				outDrop.setText("No match");
+				outBook.setText("-");
+				outSlot.setText("-");
+				Log.info("Impossible combination");
+				btnDone.setProgress(Float.NaN);
+			} else if (timesNeeded == -1) {
+				outDrop.setText("No dummy");
+				outBook.setText(""+bookshelvesNeeded);
+				outSlot.setText(""+(slot + 1));
+				Log.info("No dummy, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
+				btnDone.setProgress(-1);
+			} else {
+				if (timesNeeded > 63) outDrop.setText("64x" + (timesNeeded / 64) + " + " + (timesNeeded % 64));
+				else outDrop.setText(""+timesNeeded);
+				outBook.setText(""+bookshelvesNeeded);
+				outSlot.setText(""+(slot + 1));
+				Log.info("Throw " + timesNeeded + " items, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
+				btnDone.setProgress(-1);
 			}
 		});
 		findEnchantment.setBounds(6, 190, 264, 24);
@@ -698,32 +669,30 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		btnDone.setText("Done");
 		btnDone.setProgress(Float.NaN);
 		btnDone.setToolTipText("Press to let the Cracker know that you have gone for these enchantments");
-		btnDone.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Log.info("Enchanted and applied changes");
-				if (timesNeeded == -2) {
-					// nothing happened, since it was impossible anyway
-					return;
-				}
-				if (timesNeeded != -1) {
-					// items thrown
-					for (int i = 0; i < timesNeeded; i++) {
-						for (int j = 0; j < 4; j++) {
-							playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-						}
-					}
-					// dummy enchantment
-					playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-				}
-				// actual enchantment
-				playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-
-				timesNeeded = -2;
-				outDrop.setText("-");
-				outBook.setText("-");
-				outSlot.setText("-");
-				btnDone.setProgress(Float.NaN);
+		btnDone.addActionListener(event -> {
+			Log.info("Enchanted and applied changes");
+			if (timesNeeded == -2) {
+				// nothing happened, since it was impossible anyway
+				return;
 			}
+			if (timesNeeded != -1) {
+				// items thrown
+				for (int i = 0; i < timesNeeded; i++) {
+					for (int j = 0; j < 4; j++) {
+						playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+					}
+				}
+				// dummy enchantment
+				playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+			}
+			// actual enchantment
+			playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+
+			timesNeeded = -2;
+			outDrop.setText("-");
+			outBook.setText("-");
+			outSlot.setText("-");
+			btnDone.setProgress(Float.NaN);
 		});
 		btnDone.setBounds(276, 190, 58, 24);
 		manipPane.add(btnDone);
@@ -805,24 +774,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		Insets i2 = rootPane.getBorder().getBorderInsets(this);
 		setSize(i.left + i.right + findSeedPanel.getSize().width + i2.left + i2.right, i.top + i.bottom + findSeedPanel.getSize().height + i2.top + i2.bottom);
 		setLocationRelativeTo(null);
-	}
-
-	/**
-	 * @wbp.factory
-	 */
-	public static JList createWantedEnchantmentList() {
-		JList list = new JList();
-		list.setModel(new DefaultListModel());
-		return list;
-	}
-
-	/**
-	 * @wbp.factory
-	 */
-	public static JList createUnwantedEnchantmentList() {
-		JList list = new JList();
-		list.setModel(new DefaultListModel());
-		return list;
 	}
 
 	private static void browse(String url) {
