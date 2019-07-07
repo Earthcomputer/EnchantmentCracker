@@ -422,7 +422,7 @@ public class Enchantments {
 		case EFFICIENCY:
 		case POWER:
 		case PIERCING:
-			return 30;
+			return 10;
 		case FIRE_PROTECTION:
 		case FEATHER_FALLING:
 		case PROJECTILE_PROTECTION:
@@ -432,7 +432,7 @@ public class Enchantments {
 		case UNBREAKING:
 		case LOYALTY:
 		case QUICK_CHARGE:
-			return 10;
+			return 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
 		case AQUA_AFFINITY:
@@ -450,7 +450,7 @@ public class Enchantments {
 		case IMPALING:
 		case RIPTIDE:
 		case MULTISHOT:
-			return 3;
+			return 2;
 		case THORNS:
 		case BINDING_CURSE:
 		case SILK_TOUCH:
@@ -608,8 +608,8 @@ public class Enchantments {
 				// Get optional extra enchantments
 				while (rand.nextInt(50) <= level) {
 					// 1.14 enchantment nerf
-					level = level * 4 / 5 + 1;
-					allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
+					//level = level * 4 / 5 + 1;
+					//allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
 
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
