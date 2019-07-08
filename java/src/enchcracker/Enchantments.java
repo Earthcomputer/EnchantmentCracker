@@ -607,10 +607,6 @@ public class Enchantments {
 
 				// Get optional extra enchantments
 				while (rand.nextInt(50) <= level) {
-					// 1.14 enchantment nerf
-					//level = level * 4 / 5 + 1;
-					//allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
-
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
 					for (EnchantmentInstance ench : enchantments) {
