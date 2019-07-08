@@ -1,6 +1,5 @@
 package enchcracker.swing;
 
-import com.sun.awt.AWTUtilities;
 import enchcracker.EnchCrackerWindow;
 import enchcracker.MCFont;
 
