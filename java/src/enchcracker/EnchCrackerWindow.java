@@ -466,7 +466,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				int h = getHeight() / 2;
 				for (int x = 0; x < 7; x++) {
 					for (int y = 0; y < 2; y++) {
-						g.setColor((itemToEnch[0] == itemGrid[y][x]) ? good : bad);
+						g.setColor((itemGrid[y][x].equals(itemToEnch[0])) ? good : bad);
 						g.fillRect(w*x, h*y, w, h);
 					}
 				}
@@ -499,7 +499,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 					for (Enchantments.EnchantmentInstance inst : list) {
 						boolean contains = false;
 						for (Enchantments.EnchantmentInstance inst2 : fullList) {
-							if (inst.enchantment == inst2.enchantment) {
+							if (inst.enchantment.equals(inst2.enchantment)) {
 								contains = true;
 								break;
 							}
@@ -612,7 +612,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						for (Enchantments.EnchantmentInstance inst : wantedEnch) {
 							boolean found = false;
 							for (Enchantments.EnchantmentInstance inst2 : enchantments) {
-								if (inst.enchantment != inst2.enchantment) continue;
+								if (!inst.enchantment.equals(inst2.enchantment)) continue;
 								if (inst.level > inst2.level) continue slotLoop;
 								found = true;
 								break;
@@ -623,7 +623,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						// Does this list contain none of the enchantments we don't want?
 						for (Enchantments.EnchantmentInstance inst : unwantedEnch) {
 							for (Enchantments.EnchantmentInstance inst2 : enchantments) {
-								if (inst.enchantment != inst2.enchantment) continue;
+								if (!inst.enchantment.equals(inst2.enchantment)) continue;
 								continue slotLoop;
 							}
 						}
