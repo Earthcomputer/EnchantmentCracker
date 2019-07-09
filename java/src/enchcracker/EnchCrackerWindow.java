@@ -194,24 +194,28 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)bookshelvesTextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(bookshelvesTextField);
 		bookshelvesTextField.setBounds(225, 46, 30, 20);
+		bookshelvesTextField.setToolTipText("The number of bookshelves exposed to the enchanting table");
 
 		slot1TextField = new FixedTextField();
 		slot1TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot1TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot1TextField);
 		slot1TextField.setBounds(290, 130, 30, 20);
+		slot1TextField.setToolTipText("The number on the right of the top slot");
 
 		slot2TextField = new FixedTextField();
 		slot2TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot2TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot2TextField);
 		slot2TextField.setBounds(290, 168, 30, 20);
+		slot2TextField.setToolTipText("The number on the right of the middle slot");
 
 		slot3TextField = new FixedTextField();
 		slot3TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot3TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot3TextField);
 		slot3TextField.setBounds(290, 206, 30, 20);
+		slot3TextField.setToolTipText("The number on the right of the bottom slot");
 
 		progressBar.setToolTipText("Use this information to narrow down the possible XP seeds");
 		progressBar.addActionListener(event -> {
@@ -389,6 +393,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)xpSeed1TextField.getDocument()).setDocumentFilter(hexFilter);
 		xpSeed1TextField.setBounds(0, 20, 102, 20);
 		findSeedPanel.add(xpSeed1TextField);
+		xpSeed1TextField.setToolTipText("The first consecutive XP seed");
 
 		JLabel xpl2 = new JLabel("XP Seed 2");
 		xpl2.setFont(MCFont.standardFont);
@@ -400,6 +405,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)xpSeed2TextField.getDocument()).setDocumentFilter(hexFilter);
 		xpSeed2TextField.setBounds(0, 60, 102, 20);
 		findSeedPanel.add(xpSeed2TextField);
+		xpSeed2TextField.setToolTipText("The second consecutive XP seed");
 
 		btnCalculate.setText("Calculate Seed");
 		btnCalculate.addActionListener(event -> {
@@ -562,6 +568,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
+		itemPicker.setToolTipText("The item you want to enchant");
 
 		ImagePanel matPicker = new ImagePanel("ench_mats", 5);
 		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
@@ -583,6 +590,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
+		matPicker.setToolTipText("The material of the item you want to enchant");
 
 		ProgressButton findEnchantment = new ProgressButton("button");
 		findEnchantment.setText("Calculate");
