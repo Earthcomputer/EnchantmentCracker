@@ -11,6 +11,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -133,6 +135,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	}
 
 	private static CardLayout cards = new CardLayout();
+	final ImagePanel itemPicker;
 	public EnchCrackerWindow() {
 		super(cards, new String[]{"FindSeed", "Manip", "About"}, new String[]{"Enchantment Cracker", "Enchantment Calculator", "About"});
 
@@ -454,11 +457,29 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		manipPane.add(scrollPane);
 
 		final String[] itemToEnch = {null};
-		String[][] itemGrid = new String[][]{
-			{"diamond_helmet", "diamond_chestplate", "diamond_leggings", "diamond_boots", "bow", "fishing_rod", "crossbow"},
-			{"diamond_sword", "diamond_pickaxe", "diamond_axe", "diamond_shovel", "diamond_hoe", "trident", "book"}
+		String[][][] itemGrid = new String[][][]{
+			{
+				{"diamond_helmet", "diamond_chestplate", "diamond_leggings", "diamond_boots", "bow", "fishing_rod", "crossbow"},
+				{"diamond_sword", "diamond_pickaxe", "diamond_axe", "diamond_shovel", "diamond_hoe", "trident", "book"}
+			},
+			{
+				{"golden_helmet", "golden_chestplate", "golden_leggings", "golden_boots", "bow", "fishing_rod", "crossbow"},
+				{"golden_sword", "golden_pickaxe", "golden_axe", "golden_shovel", "golden_hoe", "trident", "book"}
+			},
+			{
+				{"iron_helmet", "iron_chestplate", "iron_leggings", "iron_boots", "bow", "fishing_rod", "crossbow"},
+				{"iron_sword", "iron_pickaxe", "iron_axe", "iron_shovel", "iron_hoe", "trident", "book"}
+			},
+			{
+				{"turtle_helmet", "leather_chestplate", "leather_leggings", "leather_boots", "bow", "fishing_rod", "crossbow"},
+				{"stone_sword", "stone_pickaxe", "stone_axe", "stone_shovel", "stone_hoe", "trident", "book"}
+			},
+			{
+				{"leather_helmet", "leather_chestplate", "leather_leggings", "leather_boots", "bow", "fishing_rod", "crossbow"},
+				{"wooden_sword", "wooden_pickaxe", "wooden_axe", "wooden_shovel", "wooden_hoe", "trident", "book"}
+			}
 		};
-		ImagePanel itemPicker = new ImagePanel("ench_items") {
+		itemPicker = new ImagePanel("ench_items", 5) {
 			private final Color good = new Color(0, 80, 0), bad = new Color(139, 139, 139);
 			@Override
 			public void paint(Graphics g) {
@@ -466,12 +487,58 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				int h = getHeight() / 2;
 				for (int x = 0; x < 7; x++) {
 					for (int y = 0; y < 2; y++) {
-						g.setColor((itemGrid[y][x].equals(itemToEnch[0])) ? good : bad);
+						g.setColor((itemGrid[itemPicker.curImg][y][x].equals(itemToEnch[0])) ? good : bad);
 						g.fillRect(w*x, h*y, w, h);
 					}
 				}
 				super.paint(g);
 			}
+		};
+		Function<Point, Void> doItemPick = (input) -> {
+			int x = input.x;
+			int y = input.y;
+			itemToEnch[0] = itemGrid[itemPicker.curImg][y][x];
+			int level = 30;
+			int enchantability = Items.getEnchantability(itemToEnch[0]);
+			level = level + 1 + (enchantability / 4) + (enchantability / 4);
+			level += Math.round(level * 1.15f);
+			if (level < 1) {
+				level = 1;
+			}
+			ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
+			while (level > 0) {
+				List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
+				for (Enchantments.EnchantmentInstance inst : list) {
+					boolean contains = false;
+					for (Enchantments.EnchantmentInstance inst2 : fullList) {
+						if (inst.enchantment.equals(inst2.enchantment)) {
+							contains = true;
+							break;
+						}
+					}
+					if (!contains) fullList.add(inst);
+				}
+				level-=5;
+			}
+
+			enchList.removeAll();
+			for (int a = 0; a < fullList.size(); a++) {
+				Enchantments.EnchantmentInstance inst = fullList.get(a);
+				JLabel enchLabel = new JLabel(niceEnch(inst.enchantment));
+				enchLabel.setFont(MCFont.standardFont);
+				enchLabel.setBounds(2, a*26, 154, 24);
+				enchList.add(enchLabel);
+
+				int max = Enchantments.getMaxLevel(inst.enchantment);
+				MultiBtnPanel enchButton = (max == 1) ? new MultiBtnPanel("levelbtnshort", 3, 1) : new MultiBtnPanel("levelbtn", 7, max);
+				enchButton.setBounds(156, a*26, enchButton.getSize().width, enchButton.getSize().height);
+				enchList.add(enchButton);
+				enchButton.id = inst.enchantment;
+			}
+			enchList.setPreferredSize(new Dimension(156 + 154, fullList.size()*26-4));
+			enchList.invalidate();
+			scrollPane.validate();
+			return null;
 		};
 		itemPicker.setBounds(6,6,itemPicker.getSize().width,itemPicker.getSize().height);
 		manipPane.add(itemPicker);
@@ -485,47 +552,28 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				System.out.println();
 				int y = e.getY() * 2 / itemPicker.getSize().height;
 				if (y < 0 || y > 1) return;
-				itemToEnch[0] = itemGrid[y][x];
-				int level = 30;
-				int enchantability = Items.getEnchantability(itemToEnch[0]);
-				level = level + 1 + (enchantability / 4) + (enchantability / 4);
-				level += Math.round(level * 1.15f);
-				if (level < 1) {
-					level = 1;
-				}
-				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
-				while (level > 0) {
-					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
-					for (Enchantments.EnchantmentInstance inst : list) {
-						boolean contains = false;
-						for (Enchantments.EnchantmentInstance inst2 : fullList) {
-							if (inst.enchantment.equals(inst2.enchantment)) {
-								contains = true;
-								break;
-							}
-						}
-						if (!contains) fullList.add(inst);
-					}
-					level-=5;
-				}
+				doItemPick.apply(new Point(x, y));
+				repaint();
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+		});
 
-				enchList.removeAll();
-				for (int a = 0; a < fullList.size(); a++) {
-					Enchantments.EnchantmentInstance inst = fullList.get(a);
-					JLabel enchLabel = new JLabel(niceEnch(inst.enchantment));
-					enchLabel.setFont(MCFont.standardFont);
-					enchLabel.setBounds(2, a*26, 154, 24);
-					enchList.add(enchLabel);
-
-					int max = Enchantments.getMaxLevel(inst.enchantment);
-					MultiBtnPanel enchButton = (max == 1) ? new MultiBtnPanel("levelbtnshort", 3, 1) : new MultiBtnPanel("levelbtn", 7, max);
-					enchButton.setBounds(156, a*26, enchButton.getSize().width, enchButton.getSize().height);
-					enchList.add(enchButton);
-					enchButton.id = inst.enchantment;
-				}
-				enchList.setPreferredSize(new Dimension(156 + 154, fullList.size()*26-4));
-				enchList.invalidate();
-				scrollPane.validate();
+		ImagePanel matPicker = new ImagePanel("ench_mats", 5);
+		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
+		manipPane.add(matPicker);
+		matPicker.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				itemPicker.curImg = (itemPicker.curImg + 1) % 5;
+				itemPicker.repaint();
+				matPicker.curImg = itemPicker.curImg;
 				repaint();
 			}
 			@Override
