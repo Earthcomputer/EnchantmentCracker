@@ -11,7 +11,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -499,52 +498,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				super.paint(g);
 			}
 		};
-		Function<Point, Void> doItemPick = (input) -> {
-			int x = input.x;
-			int y = input.y;
-			itemToEnch[0] = itemGrid[itemPicker.curImg][y][x];
-			int level = 30;
-			int enchantability = Items.getEnchantability(itemToEnch[0]);
-			level = level + 1 + (enchantability / 4) + (enchantability / 4);
-			level += Math.round(level * 1.15f);
-			if (level < 1) {
-				level = 1;
-			}
-			ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
-			while (level > 0) {
-				List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
-				for (Enchantments.EnchantmentInstance inst : list) {
-					boolean contains = false;
-					for (Enchantments.EnchantmentInstance inst2 : fullList) {
-						if (inst.enchantment.equals(inst2.enchantment)) {
-							contains = true;
-							break;
-						}
-					}
-					if (!contains) fullList.add(inst);
-				}
-				level-=5;
-			}
-
-			enchList.removeAll();
-			for (int a = 0; a < fullList.size(); a++) {
-				Enchantments.EnchantmentInstance inst = fullList.get(a);
-				JLabel enchLabel = new JLabel(niceEnch(inst.enchantment));
-				enchLabel.setFont(MCFont.standardFont);
-				enchLabel.setBounds(2, a*26, 154, 24);
-				enchList.add(enchLabel);
-
-				int max = Enchantments.getMaxLevel(inst.enchantment);
-				MultiBtnPanel enchButton = (max == 1) ? new MultiBtnPanel("levelbtnshort", 3, 1) : new MultiBtnPanel("levelbtn", 7, max);
-				enchButton.setBounds(156, a*26, enchButton.getSize().width, enchButton.getSize().height);
-				enchList.add(enchButton);
-				enchButton.id = inst.enchantment;
-			}
-			enchList.setPreferredSize(new Dimension(156 + 154, fullList.size()*26-4));
-			enchList.invalidate();
-			scrollPane.validate();
-			return null;
-		};
 		itemPicker.setBounds(6,6,itemPicker.getSize().width,itemPicker.getSize().height);
 		manipPane.add(itemPicker);
 		itemPicker.addMouseListener(new MouseListener() {
@@ -557,7 +510,47 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				System.out.println();
 				int y = e.getY() * 2 / itemPicker.getSize().height;
 				if (y < 0 || y > 1) return;
-				doItemPick.apply(new Point(x, y));
+				itemToEnch[0] = itemGrid[itemPicker.curImg][y][x];
+				int level = 30;
+				int enchantability = Items.getEnchantability(itemToEnch[0]);
+				level = level + 1 + (enchantability / 4) + (enchantability / 4);
+				level += Math.round(level * 1.15f);
+				if (level < 1) {
+					level = 1;
+				}
+				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
+				while (level > 0) {
+					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
+					for (Enchantments.EnchantmentInstance inst : list) {
+						boolean contains = false;
+						for (Enchantments.EnchantmentInstance inst2 : fullList) {
+							if (inst.enchantment.equals(inst2.enchantment)) {
+								contains = true;
+								break;
+							}
+						}
+						if (!contains) fullList.add(inst);
+					}
+					level-=5;
+				}
+
+				enchList.removeAll();
+				for (int a = 0; a < fullList.size(); a++) {
+					Enchantments.EnchantmentInstance inst = fullList.get(a);
+					JLabel enchLabel = new JLabel(niceEnch(inst.enchantment));
+					enchLabel.setFont(MCFont.standardFont);
+					enchLabel.setBounds(2, a*26, 154, 24);
+					enchList.add(enchLabel);
+
+					int max = Enchantments.getMaxLevel(inst.enchantment);
+					MultiBtnPanel enchButton = (max == 1) ? new MultiBtnPanel("levelbtnshort", 3, 1) : new MultiBtnPanel("levelbtn", 7, max);
+					enchButton.setBounds(156, a*26, enchButton.getSize().width, enchButton.getSize().height);
+					enchList.add(enchButton);
+					enchButton.id = inst.enchantment;
+				}
+				enchList.setPreferredSize(new Dimension(156 + 154, fullList.size()*26-4));
+				enchList.invalidate();
+				scrollPane.validate();
 				repaint();
 			}
 			@Override
