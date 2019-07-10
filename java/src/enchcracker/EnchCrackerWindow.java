@@ -584,6 +584,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 		matPicker.setToolTipText("The material of the item you want to enchant");
 
+		FixedTextField maxShelves = new FixedTextField();
+		maxShelves.setText("15");
+		maxShelves.setFont(MCFont.standardFont);
+		((PlainDocument)maxShelves.getDocument()).setDocumentFilter(numberFilter);
+		maxShelves.setBounds(268, 12, 30, 20);
+		manipPane.add(maxShelves);
+		maxShelves.setToolTipText("The maximum number of bookshelves to use");
+
 		ProgressButton findEnchantment = new ProgressButton("button");
 		findEnchantment.setText("Calculate");
 		findEnchantment.setToolTipText("<html>Press to calculate how many items you <i>would</i> need to throw to get these enchantments</html>");
@@ -591,6 +599,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.addActionListener(event -> {
 			long seed = playerSeed;
 			if (itemToEnch[0] == null) return;
+			int maxShelvesVal;
+			try {
+				maxShelvesVal = Integer.parseInt(maxShelves.getText());
+			}
+			catch (Exception e) {
+				Log.info("Max shelves invalid");
+				return;
+			}
 
 			Log.info("Calculating items to throw");
 			Log.info("Item: " + itemToEnch[0]);
@@ -625,10 +641,12 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			// to throw out item before dummy enchantment
 			int timesNeeded = -2;
 			int bookshelvesNeeded = 0;
+			int bestSlot = 3;
+			int bestShelves = 0;
 			int slot = 0;
 			int[] enchantLevels = new int[3];
 
-			outerLoop: for (int i = -1; i < 10000; i++) {
+			outerLoop: for (int i = -1; i <= 64 * 32; i++) {
 				int xpSeed;
 				if (i == -1) {
 					// XP seed will be the current seed, because there is no dummy enchant
@@ -639,7 +657,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				}
 
 				Random rand = new Random();
-				for (bookshelvesNeeded = 0; bookshelvesNeeded <= 15; bookshelvesNeeded++) {
+				for (bookshelvesNeeded = 0; bookshelvesNeeded <= maxShelvesVal; bookshelvesNeeded++) {
 					rand.setSeed(xpSeed);
 					// Calculate all slot levels
 					// Important they're done in a row like this because RNG is not reset in between
@@ -651,7 +669,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						enchantLevels[slot] = level;
 					}
 
-					slotLoop: for (slot = 0; slot < 3; slot++) {
+					slotLoop: for (slot = 0; slot < bestSlot; slot++) {
 						// Get enchantments (changes RNG seed)
 						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
 								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot]);
@@ -677,7 +695,8 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						}
 
 						timesNeeded = i;
-						break outerLoop;
+						bestSlot = slot;
+						bestShelves = bookshelvesNeeded;
 					}
 				}
 
@@ -698,16 +717,16 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				btnDone.setProgress(Float.NaN);
 			} else if (timesNeeded == -1) {
 				outDrop.setText("No dummy");
-				outBook.setText(""+bookshelvesNeeded);
-				outSlot.setText(""+(slot + 1));
-				Log.info("No dummy, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
+				outBook.setText(""+bestShelves);
+				outSlot.setText(""+(bestSlot + 1));
+				Log.info("No dummy, b = " + bestShelves + ", s = " + (bestSlot + 1));
 				btnDone.setProgress(-1);
 			} else {
 				if (timesNeeded > 63) outDrop.setText("64x" + (timesNeeded / 64) + " + " + (timesNeeded % 64));
 				else outDrop.setText(""+timesNeeded);
-				outBook.setText(""+bookshelvesNeeded);
-				outSlot.setText(""+(slot + 1));
-				Log.info("Throw " + timesNeeded + " items, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
+				outBook.setText(""+bestShelves);
+				outSlot.setText(""+(bestSlot + 1));
+				Log.info("Throw " + timesNeeded + " items, b = " + bestShelves + ", s = " + (bestSlot + 1));
 				btnDone.setProgress(-1);
 			}
 		});
