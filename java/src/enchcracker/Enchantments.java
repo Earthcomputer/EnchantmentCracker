@@ -135,6 +135,17 @@ public class Enchantments {
 		}
 	}
 
+	public static int levelsToXP(int startLevel, int numLevels) {
+		int amt = 0;
+		int endLevel = startLevel - numLevels;
+		for (int level = startLevel; level > endLevel; level--) {
+			if (level > 30) amt += (9 * (level-1)) - 158;
+			else if (level > 15) amt += (5 * (level-1)) - 38;
+			else amt += (2 * (level-1)) + 7;
+		}
+		return amt;
+	}
+
 	public static boolean canApply(String enchantment, String item, boolean primary) {
 		if (Items.BOOK.equals(item)) {
 			return true;

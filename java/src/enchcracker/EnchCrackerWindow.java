@@ -641,8 +641,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			// to throw out item before dummy enchantment
 			int timesNeeded = -2;
 			int bookshelvesNeeded = 0;
-			int bestSlot = 3;
+			int bestSlot = 2;
 			int bestShelves = 0;
+			int bestCost = 9999999;
 			int slot = 0;
 			int[] enchantLevels = new int[3];
 
@@ -669,10 +670,15 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						enchantLevels[slot] = level;
 					}
 
-					slotLoop: for (slot = 0; slot < bestSlot; slot++) {
+					slotLoop: for (slot = 0; slot <= bestSlot; slot++) {
 						// Get enchantments (changes RNG seed)
 						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
 								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot]);
+
+						int lvlCost =
+								(i == -1)   ? Enchantments.levelsToXP(enchantLevels[slot], slot+1)
+											: Enchantments.levelsToXP(enchantLevels[slot]+1, slot+2);
+						if (bestCost <= lvlCost) continue;
 
 						// Does this list contain all the enchantments we want?
 						for (Enchantments.EnchantmentInstance inst : wantedEnch) {
@@ -696,7 +702,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 						timesNeeded = i;
 						bestSlot = slot;
+						if (i == -1) bestSlot--;
 						bestShelves = bookshelvesNeeded;
+						bestCost = lvlCost;
 					}
 				}
 
