@@ -1,4 +1,6 @@
-package enchcracker;
+package enchcracker.cracker;
+
+import enchcracker.Log;
 
 import javax.swing.JOptionPane;
 

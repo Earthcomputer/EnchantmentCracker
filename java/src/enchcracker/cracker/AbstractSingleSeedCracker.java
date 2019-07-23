@@ -1,4 +1,4 @@
-package enchcracker;
+package enchcracker.cracker;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,6 +27,7 @@ public abstract class AbstractSingleSeedCracker {
 					Thread.currentThread().interrupt();
 				}
 			}
+			firstTime = true;
 		}
 		r.run();
 	}

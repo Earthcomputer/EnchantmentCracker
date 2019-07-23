@@ -113,6 +113,13 @@ public class Enchantments {
 		set.add(PIERCING);
 		INCOMPATIBLE_GROUPS.add(set);
 
+		set = new HashSet<>();
+		set.add(PROTECTION);
+		set.add(BLAST_PROTECTION);
+		set.add(FIRE_PROTECTION);
+		set.add(PROJECTILE_PROTECTION);
+		INCOMPATIBLE_GROUPS.add(set);
+
 		for (Field field : Enchantments.class.getDeclaredFields()) {
 			if (field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
 				if (field.getType() == String.class) {
@@ -126,6 +133,17 @@ public class Enchantments {
 				}
 			}
 		}
+	}
+
+	public static int levelsToXP(int startLevel, int numLevels) {
+		int amt = 0;
+		int endLevel = startLevel - numLevels;
+		for (int level = startLevel; level > endLevel; level--) {
+			if (level > 30) amt += (9 * (level-1)) - 158;
+			else if (level > 15) amt += (5 * (level-1)) - 38;
+			else amt += (2 * (level-1)) + 7;
+		}
+		return amt;
 	}
 
 	public static boolean canApply(String enchantment, String item, boolean primary) {
@@ -415,7 +433,7 @@ public class Enchantments {
 		case EFFICIENCY:
 		case POWER:
 		case PIERCING:
-			return 30;
+			return 10;
 		case FIRE_PROTECTION:
 		case FEATHER_FALLING:
 		case PROJECTILE_PROTECTION:
@@ -425,7 +443,7 @@ public class Enchantments {
 		case UNBREAKING:
 		case LOYALTY:
 		case QUICK_CHARGE:
-			return 10;
+			return 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
 		case AQUA_AFFINITY:
@@ -443,7 +461,7 @@ public class Enchantments {
 		case IMPALING:
 		case RIPTIDE:
 		case MULTISHOT:
-			return 3;
+			return 2;
 		case THORNS:
 		case BINDING_CURSE:
 		case SILK_TOUCH:
@@ -555,7 +573,7 @@ public class Enchantments {
 		return list;
 	}
 
-	private static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
+	public static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
 		List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
 		for (String enchantment : ALL_ENCHANTMENTS) {
 			if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {
@@ -600,10 +618,6 @@ public class Enchantments {
 
 				// Get optional extra enchantments
 				while (rand.nextInt(50) <= level) {
-					// 1.14 enchantment nerf
-					level = level * 4 / 5 + 1;
-					allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
-
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
 					for (EnchantmentInstance ench : enchantments) {
