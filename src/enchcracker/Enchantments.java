@@ -331,7 +331,7 @@ public class Enchantments {
 		case IMPALING:
 			return 1 + (level - 1) * 8;
 		case RIPTIDE:
-			return 10 * level + 7;
+			return 10 + level * 7;
 		case CHANNELING:
 			return 25;
 		case MULTISHOT:
