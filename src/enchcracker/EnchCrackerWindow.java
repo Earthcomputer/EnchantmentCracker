@@ -6,6 +6,7 @@ import enchcracker.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -29,7 +30,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	}
 
 	private String verText() {
-		return "V1.4";
+		try (Scanner scanner = new Scanner(getFile("version.txt").openStream())) {
+			return "V" + scanner.next();
+		} catch (IOException e) {
+			return "[Unknown Version]";
+		}
 	}
 
 	private JPanel contentPane;

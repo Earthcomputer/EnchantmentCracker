@@ -18,3 +18,8 @@ distributions {
         }
     }
 }
+
+import org.apache.tools.ant.filters.ReplaceTokens
+processResources {
+    filter(ReplaceTokens, tokens: [VERSION: project.cracker_version])
+}
