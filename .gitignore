@@ -17,3 +17,14 @@ MANIFEST.MF
 /out/
 *.1
 *.lck
+/build/
+/out/
+/bin/
+/.gradle/
+/.idea/
+*.iml
+*.iws
+.classpath
+.project
+/.settings/
+enchcracker.log

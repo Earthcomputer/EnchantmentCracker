@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['resources']
+
+archivesBaseName = project.name
+version = project.cracker_version
+group = 'net.earthcomputer'
+
+mainClassName = 'enchcracker.EnchCrackerWindow'
+distributions {
+    main {
+        contents {
+            from 'README.md'
+        }
+    }
+}
