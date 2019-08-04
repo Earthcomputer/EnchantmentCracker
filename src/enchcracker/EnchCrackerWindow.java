@@ -542,7 +542,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 					enchLabel.setBounds(2, a*26, 154, 24);
 					enchList.add(enchLabel);
 
-					int max = Enchantments.getMaxLevel(inst.enchantment);
+					int max = Enchantments.getMaxLevelInTable(inst.enchantment, itemToEnch[0]);
 					MultiBtnPanel enchButton = (max == 1) ? new MultiBtnPanel("levelbtnshort", 3, 1) : new MultiBtnPanel("levelbtn", 7, max);
 					enchButton.setBounds(156, a*26, enchButton.getSize().width, enchButton.getSize().height);
 					enchList.add(enchButton);

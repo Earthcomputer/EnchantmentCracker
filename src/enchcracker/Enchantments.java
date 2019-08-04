@@ -474,6 +474,25 @@ public class Enchantments {
 		}
 	}
 
+	public static int getMaxLevelInTable(String enchantment, String item) {
+		// Get the max level on enchantment tables by maximizing the random
+		// values
+		int enchantability = Items.getEnchantability(item);
+		int maxLevel;
+		if (enchantability == 0 || isTreasure(enchantment) || !canApply(enchantment, item, true)) {
+			return 0;
+		} else {
+			int level = 30 + 1 + enchantability / 4 + enchantability / 4;
+			level += Math.round(level * 0.15f);
+			for (maxLevel = getMaxLevel(enchantment); maxLevel >= 1; maxLevel--) {
+				if (level >= getMinEnchantability(enchantment, maxLevel)) {
+					return maxLevel;
+				}
+			}
+			return 0;
+		}
+	}
+
 	public static boolean areCompatible(String enchA, String enchB) {
 		// Can't have same enchantment twice
 		if (enchA.equals(enchB)) {
@@ -481,65 +500,6 @@ public class Enchantments {
 		}
 
 		return INCOMPATIBLE_GROUPS.stream().noneMatch(group -> group.contains(enchA) && group.contains(enchB));
-	}
-
-	public static List<EnchantmentInstance> parseEnchantmentInstance(String item, String str, boolean maxOnly) {
-		String[] parts = str.trim().split("\\s+");
-
-		String enchantment = parts[0].toLowerCase();
-		if (!ALL_ENCHANTMENTS.contains(enchantment)) {
-			return Collections.emptyList();
-		}
-
-		// Get the max level on enchantment tables by maximizing the random
-		// values
-		int enchantability = Items.getEnchantability(item);
-		int maxLevel;
-		if (enchantability == 0 || isTreasure(enchantment) || !canApply(enchantment, item, true)) {
-			maxLevel = 0;
-		} else {
-			int level = 30 + 1 + enchantability / 4 + enchantability / 4;
-			level += Math.round(level * 0.15f);
-			for (maxLevel = getMaxLevel(enchantment); maxLevel >= 1; maxLevel--) {
-				if (level >= getMinEnchantability(enchantment, maxLevel)) {
-					break;
-				}
-			}
-		}
-
-		if (parts.length == 1) {
-			// Infer the level
-
-			if (maxLevel == 0) {
-				return Collections.emptyList();
-			}
-
-			if (maxOnly) {
-				return Collections.singletonList(new EnchantmentInstance(enchantment, maxLevel));
-			} else {
-				List<EnchantmentInstance> list = new ArrayList<>();
-				for (int level = 1; level <= maxLevel; level++) {
-					list.add(new EnchantmentInstance(enchantment, level));
-				}
-				return list;
-			}
-		} else if (parts.length == 2) {
-			// Read the level
-			int level;
-			try {
-				level = Integer.parseInt(parts[1]);
-			} catch (NumberFormatException e) {
-				return Collections.emptyList();
-			}
-
-			if (level < 1 || level > maxLevel) {
-				return Collections.emptyList();
-			}
-
-			return Collections.singletonList(new EnchantmentInstance(enchantment, level));
-		} else {
-			return Collections.emptyList();
-		}
 	}
 
 	public static int calcEnchantmentTableLevel(Random rand, int slot, int bookshelves, String item) {
