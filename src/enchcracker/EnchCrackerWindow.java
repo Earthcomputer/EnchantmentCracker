@@ -780,16 +780,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		outDrop = new JLabel("-");
 		outDrop.setFont(MCFont.standardFont);
+		outDrop.setToolTipText("The amount of items to throw out");
 		outDrop.setBounds(40, 232, 120, 20);
 		manipPane.add(outDrop);
 
 		outSlot = new JLabel("-");
 		outSlot.setFont(MCFont.standardFont);
+		outSlot.setToolTipText("The slot to enchant with");
 		outSlot.setBounds(140, 232, 120, 20);
 		manipPane.add(outSlot);
 
 		outBook = new JLabel("-");
 		outBook.setFont(MCFont.standardFont);
+		outBook.setToolTipText("The number of bookshelves to enchant with");
 		outBook.setBounds(292, 232, 120, 20);
 		manipPane.add(outBook);
 
