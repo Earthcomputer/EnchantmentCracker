@@ -44,6 +44,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private long playerSeed;
 
 	private JLabel outDrop, outBook, outSlot;
+	private Versions mcVersion = Versions.latest();
 
 	private int timesNeeded = -2;
 
@@ -507,7 +508,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			public void mousePressed(MouseEvent e) {
 				int x = e.getX() * 7 / itemPicker.getSize().width;
 				if (x < 0 || x > 6) return;
-				System.out.println();
 				int y = e.getY() * 2 / itemPicker.getSize().height;
 				if (y < 0 || y > 1) return;
 				itemToEnch[0] = itemGrid[itemPicker.curImg][y][x];
@@ -520,7 +520,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				}
 				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
 				while (level > 0) {
-					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false);
+					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false, mcVersion);
 					for (Enchantments.EnchantmentInstance inst : list) {
 						boolean contains = false;
 						for (Enchantments.EnchantmentInstance inst2 : fullList) {
@@ -533,6 +533,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 					}
 					level-=5;
 				}
+				fullList.sort(Comparator.comparing(ench -> ench.enchantment));
 
 				enchList.removeAll();
 				for (int a = 0; a < fullList.size(); a++) {
@@ -673,7 +674,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 					slotLoop: for (slot = 0; slot <= bestSlot; slot++) {
 						// Get enchantments (changes RNG seed)
 						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
-								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot]);
+								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot], mcVersion);
 
 						int lvlCost =
 								(i == -1)   ? Enchantments.levelsToXP(enchantLevels[slot], slot+1)
@@ -779,13 +780,24 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		outSlot = new JLabel("-");
 		outSlot.setFont(MCFont.standardFont);
-		outSlot.setBounds(204, 232, 120, 20);
+		outSlot.setBounds(140, 232, 120, 20);
 		manipPane.add(outSlot);
 
 		outBook = new JLabel("-");
 		outBook.setFont(MCFont.standardFont);
 		outBook.setBounds(292, 232, 120, 20);
 		manipPane.add(outBook);
+
+		JComboBox<Versions> versionDropDown = new JComboBox<>(Versions.values());
+		versionDropDown.setSelectedItem(mcVersion);
+		versionDropDown.addActionListener(event -> {
+			Log.info("Changed Minecraft version to " + versionDropDown.getSelectedItem());
+			mcVersion = (Versions) versionDropDown.getSelectedItem();
+			repaint();
+		});
+		versionDropDown.setFont(MCFont.standardFont);
+		versionDropDown.setBounds(80, 262, 180, 20);
+		manipPane.add(versionDropDown);
 
 		// About section
 

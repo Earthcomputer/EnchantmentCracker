@@ -4,6 +4,7 @@ public class Items {
 
 	// @formatter:off
 	public static final String
+			// 1.8
 			LEATHER_HELMET = "leather_helmet",
 			LEATHER_CHESTPLATE = "leather_chestplate",
 			LEATHER_LEGGINGS = "leather_leggings",
@@ -50,17 +51,20 @@ public class Items {
 			GOLDEN_HOE = "golden_hoe",
 			DIAMOND_HOE = "diamond_hoe",
 			CARROT_ON_A_STICK = "carrot_on_a_stick",
-			ELYTRA = "elytra",
 			FISHING_ROD = "fishing_rod",
 			FLINT_AND_STEEL = "flint_and_steel",
 			SHEARS = "shears",
-			SHIELD = "shield",
 			BOW = "bow",
 			BOOK = "book",
 			PUMPKIN = "pumpkin",
 			SKULL = "skull",
+			// 1.9
+			ELYTRA = "elytra",
+			SHIELD = "shield",
+			// 1.13
 			TRIDENT = "trident",
 			TURTLE_HELMET = "turtle_helmet",
+			// 1.14
 			CROSSBOW = "crossbow";
 	// @formatter:on
 
@@ -242,6 +246,21 @@ public class Items {
 			return 1;
 		}
 		return 0;
+	}
+
+	public static Versions getIntroducedVersion(String item) {
+		switch (item) {
+			case ELYTRA:
+			case SHIELD:
+				return Versions.V1_9;
+			case TRIDENT:
+			case TURTLE_HELMET:
+				return Versions.V1_13;
+			case CROSSBOW:
+				return Versions.V1_14;
+			default:
+				return Versions.V1_8;
+		}
 	}
 	
 }
