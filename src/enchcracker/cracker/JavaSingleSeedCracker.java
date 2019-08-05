@@ -50,7 +50,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 	@Override
 	public void firstInput(int bookshelves, int slot1, int slot2, int slot3) {
 		abortRequested.set(false);
-		final int threadCount = Runtime.getRuntime().availableProcessors() - 1; // always leave one for OS
+		final int threadCount = Math.max(1, Runtime.getRuntime().availableProcessors() - 1); // always leave one for OS
 		final int blockSize = Integer.MAX_VALUE / 20 / threadCount - 1;
 		final AtomicInteger seed = new AtomicInteger(Integer.MIN_VALUE);
 		ArrayList<Thread> threads = new ArrayList<>();
