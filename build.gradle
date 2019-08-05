@@ -22,5 +22,8 @@ distributions {
 
 import org.apache.tools.ant.filters.ReplaceTokens
 processResources {
-    filter(ReplaceTokens, tokens: [VERSION: project.cracker_version])
+    inputs.property('cracker_version', project.cracker_version)
+    filesNotMatching(['**/*.png', '**/*.ttf']) {
+        it.filter(ReplaceTokens, tokens: [VERSION: project.cracker_version])
+    }
 }
