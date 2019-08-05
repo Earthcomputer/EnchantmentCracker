@@ -29,7 +29,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		return Thread.currentThread().getContextClassLoader().getResource("data/"+name);
 	}
 
-	private String verText() {
+	private static String verText() {
 		try (Scanner scanner = new Scanner(getFile("version.txt").openStream())) {
 			return "V" + scanner.next();
 		} catch (IOException e) {
@@ -90,6 +90,8 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		// Close the file logger after program has ended
 		Runtime.getRuntime().addShutdownHook(new Thread(Log::cleanupLogging));
 
+		printSystemDetails();
+
 		// Note: Native cracker disabled as it is currently slower.
 		// Initialize seed cracker
 		//singleSeedCracker = new NativeSingleSeedCracker();
@@ -105,6 +107,17 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			frame.setVisible(true);
 		} catch (Exception e) {
 			Log.fatal("Exception creating frame", e);
+		}
+	}
+
+	private static void printSystemDetails() {
+		Log.info("Enchantment cracker version " + verText());
+		Log.info("System details:");
+		Log.info("OS = " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+		Log.info("Arch (either OS/Java) = " + System.getProperty("os.arch"));
+		Log.info("Java = " + System.getProperty("java.version"));
+		if (System.getProperties().containsKey("sun.arch.data.model")) {
+			Log.info("Java arch = " + System.getProperty("sun.arch.data.model"));
 		}
 	}
 

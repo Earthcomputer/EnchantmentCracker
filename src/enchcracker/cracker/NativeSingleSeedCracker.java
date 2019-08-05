@@ -8,14 +8,6 @@ public class NativeSingleSeedCracker extends AbstractSingleSeedCracker {
 
 	@Override
 	public boolean initCracker() {
-		Log.info("System details:");
-		Log.info("OS = " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
-		Log.info("Arch (either OS/Java) = " + System.getProperty("os.arch"));
-		Log.info("Java = " + System.getProperty("java.version"));
-		if (System.getProperties().containsKey("sun.arch.data.model")) {
-			Log.info("Java arch = " + System.getProperty("sun.arch.data.model"));
-		}
-
 		try {
 			System.loadLibrary("enchcracker");
 		} catch (UnsatisfiedLinkError e) {

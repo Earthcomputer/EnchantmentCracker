@@ -1,6 +1,7 @@
 package enchcracker.cracker;
 
 import enchcracker.IntArray;
+import enchcracker.Log;
 import enchcracker.SimpleRandom;
 
 import java.util.ArrayList;
@@ -65,6 +66,9 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		seedsSearched.set(0);
 		possibleSeeds.clear();
+
+		Log.info("Cracking first input using " + (threadCount + 1) + " threads (including main thread)");
+		long startTime = System.nanoTime();
 
 		for (int i = 0; i < threadCount; i++) {
 			Thread t = new Thread(() -> {
@@ -151,6 +155,8 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		possibleSeeds.addAll(lastFew, lastPos);
 		abortRequested.set(false);
+
+		Log.info("Done in " + ((double) ((System.nanoTime() - startTime) / 10000000) / 100.0) + " seconds");
 	}
 
 	@Override
