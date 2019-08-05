@@ -44,7 +44,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
         // allows dragging
         final int[] dragX = new int[1];
         final int[] dragY = new int[1];
-        addMouseMotionListener(new MouseMotionListener() {
+        getRootPane().addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (held) {
@@ -59,7 +59,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
                 over = isOverBtn(e.getPoint());
             }
         });
-        addMouseListener(new MouseListener() {
+        getRootPane().addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {}
             @Override
@@ -94,6 +94,8 @@ public abstract class StyledFrameMinecraft extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {}
         });
+
+        getRootPane().setToolTipText("Ilmumbo");
     }
 
     private boolean isOverBtn(Point p) {
@@ -112,6 +114,28 @@ public abstract class StyledFrameMinecraft extends JFrame {
         g.setFont(MCFont.standardFont);
         g.setColor(Color.BLACK);
         g.drawString(cardTitles[b.tab], 10, 34+b.tabH);
+    }
+
+    @Override
+    protected JRootPane createRootPane() {
+        JRootPane pane = new JRootPane() {
+            @Override
+            public String getToolTipText(MouseEvent event) {
+                if (isOverTab(event.getPoint())) {
+                    int index = event.getPoint().x / b.tabW;
+                    if (index >= 0 && index < cardTitles.length)
+                        return cardTitles[index];
+                }
+                return null;
+            }
+
+            @Override
+            public Point getToolTipLocation(MouseEvent mouseEvent) {
+                return new Point(b.tabW, b.tabH + b.frameH + 6);
+            }
+        };
+        pane.setOpaque(true);
+        return pane;
     }
 
     private class StyledBorder implements Border {
