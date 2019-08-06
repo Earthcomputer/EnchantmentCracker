@@ -6,6 +6,8 @@ import enchcracker.MCFont;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -48,6 +50,14 @@ public class ProgressButton extends JButton {
         images[2][1].createGraphics().drawImage(imgData, -edgeW, -edgeH*2, null);
         images[2][2] = new BufferedImage(edgeW, edgeH, BufferedImage.TYPE_INT_ARGB);
         images[2][2].createGraphics().drawImage(imgData, -edgeW-1, -edgeH*2, null);
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
+                    doClick();
+            }
+        });
     }
 
     private float progress = -1;
@@ -76,7 +86,14 @@ public class ProgressButton extends JButton {
                 g.setColor(new Color(0, 80, 0));
                 g.fillRect(2, 2, getWidth()-4, getHeight()-4);
             }
-            g.setColor((isEnabled() || Float.isNaN(progress)) ? Color.BLACK : Color.WHITE);
+            Color color;
+            if (isFocusOwner())
+                color = Color.GREEN.darker().darker();
+            else if (isEnabled() || Float.isNaN(progress))
+                color = Color.BLACK;
+            else
+                color = Color.WHITE;
+            g.setColor(color);
             String t = getText();
             int w = g.getFontMetrics().stringWidth(t);
             g.drawString(t, (getSize().width - w) / 2, 28);
@@ -100,4 +117,5 @@ public class ProgressButton extends JButton {
     public Dimension getPreferredSize() {
         return new Dimension(super.getPreferredSize().width, edgeH);
     }
+
 }

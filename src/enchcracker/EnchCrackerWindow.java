@@ -164,6 +164,16 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		contentPane.setLayout(cards);
 		setContentPane(contentPane);
+		setFocusTraversalPolicy(new ContainerOrderFocusTraversalPolicy() {
+			{
+				setImplicitDownCycleTraversal(false);
+			}
+
+			@Override
+			protected boolean accept(Component component) {
+				return (component instanceof JButton || component instanceof JTextField || component instanceof JComboBox) && super.accept(component);
+			}
+		});
 
 		// --- Seed Cracker section
 
