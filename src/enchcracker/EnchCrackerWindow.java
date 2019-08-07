@@ -670,9 +670,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			// to throw out item before dummy enchantment
 			int timesNeeded = -2;
 			int bookshelvesNeeded = 0;
-			int bestSlot = 2;
-			int bestShelves = 0;
-			int bestCost = 9999999;
 			int slot = 0;
 			int[] enchantLevels = new int[3];
 
@@ -699,15 +696,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						enchantLevels[slot] = level;
 					}
 
-					slotLoop: for (slot = 0; slot <= bestSlot; slot++) {
+					slotLoop: for (slot = 0; slot < 3; slot++) {
 						// Get enchantments (changes RNG seed)
 						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
 								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot], mcVersion);
-
-						int lvlCost =
-								(i == -1)   ? Enchantments.levelsToXP(enchantLevels[slot], slot+1)
-											: Enchantments.levelsToXP(enchantLevels[slot]+1, slot+2);
-						if (bestCost <= lvlCost) continue;
 
 						// Does this list contain all the enchantments we want?
 						for (Enchantments.EnchantmentInstance inst : wantedEnch) {
@@ -730,10 +722,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						}
 
 						timesNeeded = i;
-						bestSlot = slot;
-						if (i == -1) bestSlot--;
-						bestShelves = bookshelvesNeeded;
-						bestCost = lvlCost;
+						break outerLoop;
 					}
 				}
 
@@ -754,16 +743,16 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				btnDone.setProgress(Float.NaN);
 			} else if (timesNeeded == -1) {
 				outDrop.setText("No dummy");
-				outBook.setText(""+bestShelves);
-				outSlot.setText(""+(bestSlot + 1));
-				Log.info("No dummy, b = " + bestShelves + ", s = " + (bestSlot + 1));
+				outBook.setText(""+bookshelvesNeeded);
+				outSlot.setText(""+(slot + 1));
+				Log.info("No dummy, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
 				btnDone.setProgress(-1);
 			} else {
 				if (timesNeeded > 63) outDrop.setText("64x" + (timesNeeded / 64) + " + " + (timesNeeded % 64));
 				else outDrop.setText(""+timesNeeded);
-				outBook.setText(""+bestShelves);
-				outSlot.setText(""+(bestSlot + 1));
-				Log.info("Throw " + timesNeeded + " items, b = " + bestShelves + ", s = " + (bestSlot + 1));
+				outBook.setText(""+bookshelvesNeeded);
+				outSlot.setText(""+(slot + 1));
+				Log.info("Throw " + timesNeeded + " items, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
 				btnDone.setProgress(-1);
 			}
 		});
