@@ -45,6 +45,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private ProgressButton progressBar;
 	private JTextField xpSeed1TextField;
 	private JTextField xpSeed2TextField;
+	private JTextField levelTextField;
 
 	private long playerSeed;
 
@@ -52,6 +53,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private Versions mcVersion = Versions.latest();
 
 	private int timesNeeded = -2;
+	private int chosenSlot = -1;
 
 	private static AbstractSingleSeedCracker singleSeedCracker;
 
@@ -201,6 +203,22 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				super.replace(fb, offset, length, string, attr);
 			}
 		};
+
+		DocumentFilter levelNumberFilter = new DocumentFilter() {
+			@Override
+			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+				if (!string.matches("\\d*")) return;
+				if (fb.getDocument().getLength() + string.length() > 3) return;
+				super.insertString(fb, offset, string, attr);
+			}
+			@Override
+			public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr) throws BadLocationException {
+				if (!string.matches("\\d*")) return;
+				if (fb.getDocument().getLength() - length + string.length() > 3) return;
+				super.replace(fb, offset, length, string, attr);
+			}
+		};
+
 		DocumentFilter hexFilter = new DocumentFilter() {
 			@Override
 			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
@@ -628,12 +646,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.addActionListener(event -> {
 			long seed = playerSeed;
 			if (itemToEnch[0] == null) return;
-			int maxShelvesVal;
+			int maxShelvesVal = 0;
 			try {
 				maxShelvesVal = Integer.parseInt(maxShelves.getText());
 			}
-			catch (Exception e) {
+			catch (NumberFormatException e) {
 				Log.info("Max shelves invalid");
+				return;
+			}
+			int playerLevel = 0;
+			try {
+				playerLevel = Integer.parseInt(levelTextField.getText());
+			} catch (NumberFormatException e) {
+				Log.info("Level invalid");
 				return;
 			}
 
@@ -701,6 +726,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						List<Enchantments.EnchantmentInstance> enchantments = Enchantments
 								.getEnchantmentsInTable(rand, xpSeed, itemToEnch[0], slot, enchantLevels[slot], mcVersion);
 
+						if (enchantLevels[slot] == 0) {
+							continue slotLoop;
+						} else if (i == -1 && playerLevel < enchantLevels[slot]) {
+							continue slotLoop;
+						} else if (playerLevel < (enchantLevels[slot] + 1)) {
+							continue slotLoop;
+						}
+
 						// Does this list contain all the enchantments we want?
 						for (Enchantments.EnchantmentInstance inst : wantedEnch) {
 							boolean found = false;
@@ -755,6 +788,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				Log.info("Throw " + timesNeeded + " items, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
 				btnDone.setProgress(-1);
 			}
+			chosenSlot = slot;
 		});
 		findEnchantment.setBounds(6, 190, 264, 24);
 		manipPane.add(findEnchantment);
@@ -764,7 +798,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		btnDone.setToolTipText("Press to let the Cracker know that you have gone for these enchantments");
 		btnDone.addActionListener(event -> {
 			Log.info("Enchanted and applied changes");
-			if (timesNeeded == -2) {
+			if (timesNeeded == -2 || chosenSlot == -1) {
 				// nothing happened, since it was impossible anyway
 				return;
 			}
@@ -781,6 +815,16 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			// actual enchantment
 			playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
 
+			try {
+				int playerLevel = Integer.parseInt(levelTextField.getText());
+				if (timesNeeded != -1) {
+					playerLevel--;
+				}
+				playerLevel -= (chosenSlot + 1);
+				levelTextField.setText(Integer.toString(playerLevel));
+			} catch (NumberFormatException e) {
+				Log.info("Could not update player level text");
+			}
 			timesNeeded = -2;
 			outDrop.setText("-");
 			outBook.setText("-");
@@ -818,6 +862,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		versionDropDown.setFont(MCFont.standardFont);
 		versionDropDown.setBounds(80, 262, 180, 20);
 		manipPane.add(versionDropDown);
+
+		JLabel lblLevel = new JLabel("Level: ");
+		lblLevel.setFont(MCFont.standardFont);
+		lblLevel.setBounds(115, 284, 62, 20);
+		manipPane.add(lblLevel);
+
+        levelTextField = new FixedTextField();
+        levelTextField.setFont(MCFont.standardFont);
+        ((PlainDocument)levelTextField.getDocument()).setDocumentFilter(levelNumberFilter);
+        manipPane.add(levelTextField);
+        levelTextField.setText("999");
+        levelTextField.setBounds(177, 284, 45, 20);
+        levelTextField.setToolTipText("The current level of the player. Allows finding enchantments at level 30 and below.");
 
 		// About section
 
