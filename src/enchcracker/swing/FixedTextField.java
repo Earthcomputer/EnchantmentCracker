@@ -1,4 +1,4 @@
-package enchcracker;
+package enchcracker.swing;
 
 import java.awt.IllegalComponentStateException;
 import java.awt.Rectangle;

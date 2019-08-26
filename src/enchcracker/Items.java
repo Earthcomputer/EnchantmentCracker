@@ -4,6 +4,7 @@ public class Items {
 
 	// @formatter:off
 	public static final String
+			// 1.8
 			LEATHER_HELMET = "leather_helmet",
 			LEATHER_CHESTPLATE = "leather_chestplate",
 			LEATHER_LEGGINGS = "leather_leggings",
@@ -50,18 +51,20 @@ public class Items {
 			GOLDEN_HOE = "golden_hoe",
 			DIAMOND_HOE = "diamond_hoe",
 			CARROT_ON_A_STICK = "carrot_on_a_stick",
-			ELYTRA = "elytra",
 			FISHING_ROD = "fishing_rod",
 			FLINT_AND_STEEL = "flint_and_steel",
 			SHEARS = "shears",
-			SHIELD = "shield",
 			BOW = "bow",
 			BOOK = "book",
-			ENCHANTED_BOOK = "enchanted_book",
 			PUMPKIN = "pumpkin",
 			SKULL = "skull",
+			// 1.9
+			ELYTRA = "elytra",
+			SHIELD = "shield",
+			// 1.13
 			TRIDENT = "trident",
 			TURTLE_HELMET = "turtle_helmet",
+			// 1.14
 			CROSSBOW = "crossbow";
 	// @formatter:on
 
@@ -69,30 +72,27 @@ public class Items {
 		if (item.endsWith("_helmet") || item.endsWith("_chestplate") || item.endsWith("_leggings")
 				|| item.endsWith("_boots")) {
 			// @formatter:off
-			if (LEATHER_HELMET.equals(item)
-					|| LEATHER_CHESTPLATE.equals(item)
-					|| LEATHER_LEGGINGS.equals(item)
-					|| LEATHER_BOOTS.equals(item)
-					|| IRON_HELMET.equals(item)
-					|| IRON_CHESTPLATE.equals(item)
-					|| IRON_LEGGINGS.equals(item)
-					|| IRON_BOOTS.equals(item)
-					|| CHAINMAIL_HELMET.equals(item)
-					|| CHAINMAIL_CHESTPLATE.equals(item)
-					|| CHAINMAIL_LEGGINGS.equals(item)
-					|| CHAINMAIL_BOOTS.equals(item)
-					|| GOLDEN_HELMET.equals(item)
-					|| GOLDEN_CHESTPLATE.equals(item)
-					|| GOLDEN_LEGGINGS.equals(item)
-					|| GOLDEN_BOOTS.equals(item)
-					|| DIAMOND_HELMET.equals(item)
-					|| DIAMOND_CHESTPLATE.equals(item)
-					|| DIAMOND_LEGGINGS.equals(item)
-					|| DIAMOND_BOOTS.equals(item)
-					|| TURTLE_HELMET.equals(item)
-					) {
-				return true;
-			}
+			return LEATHER_HELMET.equals(item)
+				|| LEATHER_CHESTPLATE.equals(item)
+				|| LEATHER_LEGGINGS.equals(item)
+				|| LEATHER_BOOTS.equals(item)
+				|| IRON_HELMET.equals(item)
+				|| IRON_CHESTPLATE.equals(item)
+				|| IRON_LEGGINGS.equals(item)
+				|| IRON_BOOTS.equals(item)
+				|| CHAINMAIL_HELMET.equals(item)
+				|| CHAINMAIL_CHESTPLATE.equals(item)
+				|| CHAINMAIL_LEGGINGS.equals(item)
+				|| CHAINMAIL_BOOTS.equals(item)
+				|| GOLDEN_HELMET.equals(item)
+				|| GOLDEN_CHESTPLATE.equals(item)
+				|| GOLDEN_LEGGINGS.equals(item)
+				|| GOLDEN_BOOTS.equals(item)
+				|| DIAMOND_HELMET.equals(item)
+				|| DIAMOND_CHESTPLATE.equals(item)
+				|| DIAMOND_LEGGINGS.equals(item)
+				|| DIAMOND_BOOTS.equals(item)
+				|| TURTLE_HELMET.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -117,14 +117,11 @@ public class Items {
 	public static boolean isSword(String item) {
 		if (item.endsWith("_sword")) {
 			// @formatter:off
-			if (WOODEN_SWORD.equals(item)
-					|| STONE_SWORD.equals(item)
-					|| IRON_SWORD.equals(item)
-					|| GOLDEN_SWORD.equals(item)
-					|| DIAMOND_SWORD.equals(item)
-					) {
-				return true;
-			}
+			return WOODEN_SWORD.equals(item)
+				|| STONE_SWORD.equals(item)
+				|| IRON_SWORD.equals(item)
+				|| GOLDEN_SWORD.equals(item)
+				|| DIAMOND_SWORD.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -133,14 +130,11 @@ public class Items {
 	public static boolean isAxe(String item) {
 		if (item.endsWith("_axe")) {
 			// @formatter:off
-			if (WOODEN_AXE.equals(item)
-					|| STONE_AXE.equals(item)
-					|| IRON_AXE.equals(item)
-					|| GOLDEN_AXE.equals(item)
-					|| DIAMOND_AXE.equals(item)
-					) {
-				return true;
-			}
+			return WOODEN_AXE.equals(item)
+				|| STONE_AXE.equals(item)
+				|| IRON_AXE.equals(item)
+				|| GOLDEN_AXE.equals(item)
+				|| DIAMOND_AXE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -149,14 +143,11 @@ public class Items {
 	public static boolean isHoe(String item) {
 		if (item.endsWith("_hoe")) {
 			// @formatter:off
-			if (WOODEN_HOE.equals(item)
-					|| STONE_HOE.equals(item)
-					|| IRON_HOE.equals(item)
-					|| GOLDEN_HOE.equals(item)
-					|| DIAMOND_HOE.equals(item)
-					) {
-				return true;
-			}
+			return WOODEN_HOE.equals(item)
+				|| STONE_HOE.equals(item)
+				|| IRON_HOE.equals(item)
+				|| GOLDEN_HOE.equals(item)
+				|| DIAMOND_HOE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -168,19 +159,16 @@ public class Items {
 		}
 		if (item.endsWith("_pickaxe") || item.endsWith("_shovel")) {
 			// @formatter:off
-			if (WOODEN_PICKAXE.equals(item)
-					|| STONE_PICKAXE.equals(item)
-					|| IRON_PICKAXE.equals(item)
-					|| GOLDEN_PICKAXE.equals(item)
-					|| DIAMOND_PICKAXE.equals(item)
-					|| WOODEN_SHOVEL.equals(item)
-					|| STONE_SHOVEL.equals(item)
-					|| IRON_SHOVEL.equals(item)
-					|| GOLDEN_SHOVEL.equals(item)
-					|| DIAMOND_SHOVEL.equals(item)
-					) {
-				return true;
-			}
+			return WOODEN_PICKAXE.equals(item)
+				|| STONE_PICKAXE.equals(item)
+				|| IRON_PICKAXE.equals(item)
+				|| GOLDEN_PICKAXE.equals(item)
+				|| DIAMOND_PICKAXE.equals(item)
+				|| WOODEN_SHOVEL.equals(item)
+				|| STONE_SHOVEL.equals(item)
+				|| IRON_SHOVEL.equals(item)
+				|| GOLDEN_SHOVEL.equals(item)
+				|| DIAMOND_SHOVEL.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -189,18 +177,18 @@ public class Items {
 	public static boolean hasDurability(String item) {
 		// @formatter:off
 		return isArmor(item)
-				|| isTool(item)
-				|| isSword(item)
-				|| isHoe(item)
-				|| BOW.equals(item)
-				|| CARROT_ON_A_STICK.equals(item)
-				|| ELYTRA.equals(item)
-				|| FISHING_ROD.equals(item)
-				|| FLINT_AND_STEEL.equals(item)
-				|| SHEARS.equals(item)
-				|| SHIELD.equals(item)
-				|| TRIDENT.equals(item)
-				|| CROSSBOW.equals(item);
+			|| isTool(item)
+			|| isSword(item)
+			|| isHoe(item)
+			|| BOW.equals(item)
+			|| CARROT_ON_A_STICK.equals(item)
+			|| ELYTRA.equals(item)
+			|| FISHING_ROD.equals(item)
+			|| FLINT_AND_STEEL.equals(item)
+			|| SHEARS.equals(item)
+			|| SHIELD.equals(item)
+			|| TRIDENT.equals(item)
+			|| CROSSBOW.equals(item);
 		// @formatter:on
 	}
 
@@ -225,7 +213,7 @@ public class Items {
 				return 9;
 			}
 		}
-		if (isSword(item) || isTool(item)) {
+		if (isSword(item) || isTool(item) || isHoe(item)) {
 			if (item.startsWith("wooden_")) {
 				return 15;
 			}
@@ -258,6 +246,21 @@ public class Items {
 			return 1;
 		}
 		return 0;
+	}
+
+	public static Versions getIntroducedVersion(String item) {
+		switch (item) {
+			case ELYTRA:
+			case SHIELD:
+				return Versions.V1_9;
+			case TRIDENT:
+			case TURTLE_HELMET:
+				return Versions.V1_13;
+			case CROSSBOW:
+				return Versions.V1_14;
+			default:
+				return Versions.V1_8;
+		}
 	}
 	
 }

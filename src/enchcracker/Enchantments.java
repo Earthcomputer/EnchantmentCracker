@@ -9,6 +9,7 @@ public class Enchantments {
 
 	// @formatter:off
 	public static final String
+			// 1.8
 			PROTECTION = "protection",
 			FIRE_PROTECTION = "fire_protection",
 			FEATHER_FALLING = "feather_falling",
@@ -18,15 +19,12 @@ public class Enchantments {
 			AQUA_AFFINITY = "aqua_affinity",
 			THORNS = "thorns",
 			DEPTH_STRIDER = "depth_strider",
-			FROST_WALKER = "frost_walker",
-			BINDING_CURSE = "binding_curse",
 			SHARPNESS = "sharpness",
 			SMITE = "smite",
 			BANE_OF_ARTHROPODS = "bane_of_arthropods",
 			KNOCKBACK = "knockback",
 			FIRE_ASPECT = "fire_aspect",
 			LOOTING = "looting",
-			SWEEPING = "sweeping",
 			EFFICIENCY = "efficiency",
 			SILK_TOUCH = "silk_touch",
 			UNBREAKING = "unbreaking",
@@ -37,81 +35,111 @@ public class Enchantments {
 			INFINITY = "infinity",
 			LUCK_OF_THE_SEA = "luck_of_the_sea",
 			LURE = "lure",
+			// 1.9
+			FROST_WALKER = "frost_walker",
+			MENDING = "mending",
+			// 1.11
+			BINDING_CURSE = "binding_curse",
+			VANISHING_CURSE = "vanishing_curse",
+			// 1.11.1
+			SWEEPING = "sweeping",
+			// 1.13
 			LOYALTY = "loyalty",
 			IMPALING = "impaling",
 			RIPTIDE = "riptide",
 			CHANNELING = "channeling",
+			// 1.14
 			MULTISHOT = "multishot",
 			QUICK_CHARGE = "quick_charge",
-			PIERCING = "piercing",
-			MENDING = "mending",
-			VANISHING_CURSE = "vanishing_curse";
+			PIERCING = "piercing";
 	// @formatter:on
 
 	// @formatter:off
 	public static final LinkedHashSet<String> ALL_ENCHANTMENTS = new LinkedHashSet<>();
 	// @formatter:on
 
-	private static final Set<Set<String>> INCOMPATIBLE_GROUPS = new HashSet<>();
+	private static final List<CompatibilityFunction> COMPATIBILITY_FUNCTIONS = new ArrayList<>();
 
 	static {
-		for (Field field : Enchantments.class.getFields()) {
-			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class) {
-				try {
-					ALL_ENCHANTMENTS.add((String) field.get(null));
-				} catch (Exception e) {
-					throw new AssertionError(e);
-				}
-			}
-		}
+		// Add in registry order
+		Collections.addAll(ALL_ENCHANTMENTS,
+				PROTECTION,
+				FIRE_PROTECTION,
+				FEATHER_FALLING,
+				BLAST_PROTECTION,
+				PROJECTILE_PROTECTION,
+				RESPIRATION,
+				AQUA_AFFINITY,
+				THORNS,
+				DEPTH_STRIDER,
+				FROST_WALKER,
+				BINDING_CURSE,
+				SHARPNESS,
+				SMITE,
+				BANE_OF_ARTHROPODS,
+				KNOCKBACK,
+				FIRE_ASPECT,
+				LOOTING,
+				SWEEPING,
+				EFFICIENCY,
+				SILK_TOUCH,
+				UNBREAKING,
+				FORTUNE,
+				POWER,
+				PUNCH,
+				FLAME,
+				INFINITY,
+				LUCK_OF_THE_SEA,
+				LURE,
+				LOYALTY,
+				IMPALING,
+				RIPTIDE,
+				CHANNELING,
+				MULTISHOT,
+				QUICK_CHARGE,
+				PIERCING,
+				MENDING,
+				VANISHING_CURSE
+		);
 
-		Set<String> set;
+		// every enchantment with itself
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(enchB));
 
-		set = new HashSet<>();
-		set.add(INFINITY);
-		set.add(MENDING);
-		INCOMPATIBLE_GROUPS.add(set);
+		// infinity with mending
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version.before(Versions.V1_11_1) || !enchA.equals(INFINITY) || !enchB.equals(MENDING));
+		// sharpness with smite
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SHARPNESS) || !enchB.equals(SMITE));
+		// sharpness with bane of arthropods
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SHARPNESS) || !enchB.equals(BANE_OF_ARTHROPODS));
+		// smite with bane of arthropods
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SMITE) || !enchB.equals(BANE_OF_ARTHROPODS));
+		// depth strider with frost walker
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(DEPTH_STRIDER) || !enchB.equals(FROST_WALKER));
+		// silk touch with looting
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SILK_TOUCH) || !enchB.equals(LOOTING));
+		// silk touch with fortune
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SILK_TOUCH) || !enchB.equals(FORTUNE));
+		// silk touch with luck of the sea
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(SILK_TOUCH) || !enchB.equals(LUCK_OF_THE_SEA));
+		// riptide with loyalty
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(RIPTIDE) || !enchB.equals(LOYALTY));
+		// riptide with channeling
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(RIPTIDE) || !enchB.equals(CHANNELING));
+		// multishot with piercing
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> !enchA.equals(MULTISHOT) || !enchB.equals(PIERCING));
 
-		set = new HashSet<>();
-		set.add(SHARPNESS);
-		set.add(SMITE);
-		set.add(BANE_OF_ARTHROPODS);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(DEPTH_STRIDER);
-		set.add(FROST_WALKER);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(SILK_TOUCH);
-		set.add(LOOTING);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(SILK_TOUCH);
-		set.add(FORTUNE);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(SILK_TOUCH);
-		set.add(LUCK_OF_THE_SEA);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(RIPTIDE);
-		set.add(LOYALTY);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(RIPTIDE);
-		set.add(CHANNELING);
-		INCOMPATIBLE_GROUPS.add(set);
-
-		set = new HashSet<>();
-		set.add(MULTISHOT);
-		set.add(PIERCING);
-		INCOMPATIBLE_GROUPS.add(set);
+		// protection with blast protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(PROTECTION) || !enchB.equals(BLAST_PROTECTION));
+		// protection with fire protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(PROTECTION) || !enchB.equals(FIRE_PROTECTION));
+		// protection with projectile protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(PROTECTION) || !enchB.equals(PROJECTILE_PROTECTION));
+		// blast protection with fire protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(BLAST_PROTECTION) || !enchB.equals(FIRE_PROTECTION));
+		// blast protection with projectile protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(BLAST_PROTECTION) || !enchB.equals(PROJECTILE_PROTECTION));
+		// fire protection with projectile protection
+		COMPATIBILITY_FUNCTIONS.add((enchA, enchB, version) -> version == Versions.V1_14 || !enchA.equals(FIRE_PROTECTION) || !enchB.equals(PROJECTILE_PROTECTION));
 
 		for (Field field : Enchantments.class.getDeclaredFields()) {
 			if (field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
@@ -126,6 +154,17 @@ public class Enchantments {
 				}
 			}
 		}
+	}
+
+	public static int levelsToXP(int startLevel, int numLevels) {
+		int amt = 0;
+		int endLevel = startLevel - numLevels;
+		for (int level = startLevel; level > endLevel; level--) {
+			if (level > 30) amt += (9 * (level-1)) - 158;
+			else if (level > 15) amt += (5 * (level-1)) - 38;
+			else amt += (2 * (level-1)) + 7;
+		}
+		return amt;
 	}
 
 	public static boolean canApply(String enchantment, String item, boolean primary) {
@@ -313,7 +352,7 @@ public class Enchantments {
 		case IMPALING:
 			return 1 + (level - 1) * 8;
 		case RIPTIDE:
-			return 10 * level + 7;
+			return 10 + level * 7;
 		case CHANNELING:
 			return 25;
 		case MULTISHOT:
@@ -408,14 +447,14 @@ public class Enchantments {
 		}
 	}
 
-	public static int getWeight(String enchantment) {
+	public static int getWeight(String enchantment, Versions version) {
 		switch (enchantment) {
 		case PROTECTION:
 		case SHARPNESS:
 		case EFFICIENCY:
 		case POWER:
 		case PIERCING:
-			return 30;
+			return version == Versions.V1_14 ? 30 : 10;
 		case FIRE_PROTECTION:
 		case FEATHER_FALLING:
 		case PROJECTILE_PROTECTION:
@@ -425,7 +464,7 @@ public class Enchantments {
 		case UNBREAKING:
 		case LOYALTY:
 		case QUICK_CHARGE:
-			return 10;
+			return version == Versions.V1_14 ? 10 : 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
 		case AQUA_AFFINITY:
@@ -443,7 +482,7 @@ public class Enchantments {
 		case IMPALING:
 		case RIPTIDE:
 		case MULTISHOT:
-			return 3;
+			return version == Versions.V1_14 ? 3 : 2;
 		case THORNS:
 		case BINDING_CURSE:
 		case SILK_TOUCH:
@@ -456,72 +495,57 @@ public class Enchantments {
 		}
 	}
 
-	public static boolean areCompatible(String enchA, String enchB) {
-		// Can't have same enchantment twice
-		if (enchA.equals(enchB)) {
-			return false;
+	public static Versions getIntroducedVersion(String enchantment) {
+		switch (enchantment) {
+			case FROST_WALKER:
+			case MENDING:
+				return Versions.V1_9;
+			case BINDING_CURSE:
+			case VANISHING_CURSE:
+				return Versions.V1_11;
+			case SWEEPING:
+				return Versions.V1_11_1;
+			case LOYALTY:
+			case IMPALING:
+			case RIPTIDE:
+			case CHANNELING:
+				return Versions.V1_13;
+			case MULTISHOT:
+			case QUICK_CHARGE:
+			case PIERCING:
+				return Versions.V1_14;
+			default:
+				return Versions.V1_8;
 		}
-
-		return INCOMPATIBLE_GROUPS.stream().noneMatch(group -> group.contains(enchA) && group.contains(enchB));
 	}
 
-	public static List<EnchantmentInstance> parseEnchantmentInstance(String item, String str, boolean maxOnly) {
-		String[] parts = str.trim().split("\\s+");
-
-		String enchantment = parts[0].toLowerCase();
-		if (!ALL_ENCHANTMENTS.contains(enchantment)) {
-			return Collections.emptyList();
-		}
-
+	public static int getMaxLevelInTable(String enchantment, String item) {
 		// Get the max level on enchantment tables by maximizing the random
 		// values
 		int enchantability = Items.getEnchantability(item);
 		int maxLevel;
 		if (enchantability == 0 || isTreasure(enchantment) || !canApply(enchantment, item, true)) {
-			maxLevel = 0;
+			return 0;
 		} else {
 			int level = 30 + 1 + enchantability / 4 + enchantability / 4;
 			level += Math.round(level * 0.15f);
 			for (maxLevel = getMaxLevel(enchantment); maxLevel >= 1; maxLevel--) {
 				if (level >= getMinEnchantability(enchantment, maxLevel)) {
-					break;
+					return maxLevel;
 				}
 			}
+			return 0;
 		}
+	}
 
-		if (parts.length == 1) {
-			// Infer the level
-
-			if (maxLevel == 0) {
-				return Collections.emptyList();
-			}
-
-			if (maxOnly) {
-				return Collections.singletonList(new EnchantmentInstance(enchantment, maxLevel));
-			} else {
-				List<EnchantmentInstance> list = new ArrayList<>();
-				for (int level = 1; level <= maxLevel; level++) {
-					list.add(new EnchantmentInstance(enchantment, level));
-				}
-				return list;
-			}
-		} else if (parts.length == 2) {
-			// Read the level
-			int level;
-			try {
-				level = Integer.parseInt(parts[1]);
-			} catch (NumberFormatException e) {
-				return Collections.emptyList();
-			}
-
-			if (level < 1 || level > maxLevel) {
-				return Collections.emptyList();
-			}
-
-			return Collections.singletonList(new EnchantmentInstance(enchantment, level));
-		} else {
-			return Collections.emptyList();
+	public static boolean areCompatible(String enchA, String enchB, Versions version) {
+		for (CompatibilityFunction func : COMPATIBILITY_FUNCTIONS) {
+			if (!func.compatible(enchA, enchB, version))
+				return false;
+			if (!func.compatible(enchB, enchA, version))
+				return false;
 		}
+		return true;
 	}
 
 	public static int calcEnchantmentTableLevel(Random rand, int slot, int bookshelves, String item) {
@@ -544,10 +568,10 @@ public class Enchantments {
 	}
 
 	public static List<EnchantmentInstance> getEnchantmentsInTable(Random rand, int xpSeed, String item, int slot,
-			int levels) {
+			int levels, Versions version) {
 		rand.setSeed(xpSeed + slot);
 
-		List<EnchantmentInstance> list = addRandomEnchantments(rand, item, levels, false);
+		List<EnchantmentInstance> list = addRandomEnchantments(rand, item, levels, false, version);
 		if (Items.BOOK.equals(item) && list.size() > 1) {
 			list.remove(rand.nextInt(list.size()));
 		}
@@ -555,9 +579,16 @@ public class Enchantments {
 		return list;
 	}
 
-	private static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure) {
+	public static List<EnchantmentInstance> getHighestAllowedEnchantments(int level, String item, boolean treasure, Versions version) {
 		List<EnchantmentInstance> allowedEnchantments = new ArrayList<>();
+
+		if (version.before(Items.getIntroducedVersion(item)))
+		    return allowedEnchantments;
+
 		for (String enchantment : ALL_ENCHANTMENTS) {
+		    if (version.before(getIntroducedVersion(enchantment)))
+		        continue;
+
 			if ((treasure || !isTreasure(enchantment)) && canApply(enchantment, item, true)) {
 				for (int enchLvl = getMaxLevel(enchantment); enchLvl >= 1; enchLvl--) {
 					if (level >= getMinEnchantability(enchantment, enchLvl)
@@ -572,7 +603,7 @@ public class Enchantments {
 	}
 
 	public static List<EnchantmentInstance> addRandomEnchantments(Random rand, String item, int level,
-			boolean treasure) {
+			boolean treasure, Versions version) {
 		int enchantability = Items.getEnchantability(item);
 		List<EnchantmentInstance> enchantments = new ArrayList<>();
 
@@ -587,7 +618,7 @@ public class Enchantments {
 			}
 
 			// Get a list of allowed enchantments with their max allowed levels
-			List<EnchantmentInstance> allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
+			List<EnchantmentInstance> allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure, version);
 
 			// allowedEnchantments.forEach(ench -> System.out.println("Allowed:
 			// " + ench));
@@ -595,20 +626,22 @@ public class Enchantments {
 			if (!allowedEnchantments.isEmpty()) {
 				// Get first enchantment
 				EnchantmentInstance enchantmentInstance = weightedRandom(rand, allowedEnchantments,
-						it -> getWeight(it.enchantment));
+						it -> getWeight(it.enchantment, version));
 				enchantments.add(enchantmentInstance);
 
 				// Get optional extra enchantments
 				while (rand.nextInt(50) <= level) {
-					// 1.14 enchantment nerf
-					level = level * 4 / 5 + 1;
-					allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure);
+				    // 1.14 enchantment nerf
+                    if (version == Versions.V1_14) {
+                        level = level * 4 / 5 + 1;
+                        allowedEnchantments = getHighestAllowedEnchantments(level, item, treasure, version);
+                    }
 
 					// Remove incompatible enchantments from allowed list with
 					// last enchantment
 					for (EnchantmentInstance ench : enchantments) {
 						String enchantment = ench.enchantment;
-						allowedEnchantments.removeIf(it -> !areCompatible(it.enchantment, enchantment));
+						allowedEnchantments.removeIf(it -> !areCompatible(it.enchantment, enchantment, version));
 					}
 
 					if (allowedEnchantments.isEmpty()) {
@@ -617,7 +650,7 @@ public class Enchantments {
 					}
 
 					// Get extra enchantment
-					enchantmentInstance = weightedRandom(rand, allowedEnchantments, it -> getWeight(it.enchantment));
+					enchantmentInstance = weightedRandom(rand, allowedEnchantments, it -> getWeight(it.enchantment, version));
 					enchantments.add(enchantmentInstance);
 
 					// Make it less likely for another enchantment to happen
@@ -695,6 +728,11 @@ public class Enchantments {
 			}
 		}
 		return null;
+	}
+
+	@FunctionalInterface
+	private static interface CompatibilityFunction {
+		boolean compatible(String enchA, String enchB, Versions version);
 	}
 
 }
