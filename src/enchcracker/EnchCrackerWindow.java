@@ -728,8 +728,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 						if (enchantLevels[slot] == 0) {
 							continue slotLoop;
-						} else if (i == -1 && playerLevel < enchantLevels[slot]) {
-							continue slotLoop;
+						} else if (i == -1) {
+							if (playerLevel < enchantLevels[slot]) {
+								continue slotLoop;
+							}
 						} else if (playerLevel < (enchantLevels[slot] + 1)) {
 							continue slotLoop;
 						}
