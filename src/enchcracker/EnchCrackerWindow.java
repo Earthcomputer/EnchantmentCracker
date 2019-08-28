@@ -862,12 +862,12 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			repaint();
 		});
 		versionDropDown.setFont(MCFont.standardFont);
-		versionDropDown.setBounds(80, 262, 180, 20);
+		versionDropDown.setBounds(5, 270, 180, 20);
 		manipPane.add(versionDropDown);
 
 		JLabel lblLevel = new JLabel("Level: ");
 		lblLevel.setFont(MCFont.standardFont);
-		lblLevel.setBounds(115, 284, 62, 20);
+		lblLevel.setBounds(205, 270, 62, 20);
 		manipPane.add(lblLevel);
 
         levelTextField = new FixedTextField();
@@ -875,7 +875,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
         ((PlainDocument)levelTextField.getDocument()).setDocumentFilter(levelNumberFilter);
         manipPane.add(levelTextField);
         levelTextField.setText("999");
-        levelTextField.setBounds(177, 284, 45, 20);
+        levelTextField.setBounds(270, 270, 45, 20);
         levelTextField.setToolTipText("The current level of the player. Allows finding enchantments at level 30 and below.");
 
 		// About section
