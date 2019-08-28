@@ -11,7 +11,7 @@ version = project.cracker_version
 group = 'net.earthcomputer'
 
 mainClassName = 'enchcracker.EnchCrackerWindow'
-applicationDefaultJvmArgs = ['-Xms1G', '-Xmx1G']
+applicationDefaultJvmArgs = ['-Xms2G', '-Xmx2G']
 distributions {
     main {
         contents {
@@ -19,6 +19,7 @@ distributions {
         }
     }
 }
+startScripts.windowsStartScriptGenerator.template = project.resources.text.fromFile 'windowsStartScript.txt'
 
 import org.apache.tools.ant.filters.ReplaceTokens
 processResources {
