@@ -79,7 +79,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
                     Point p = e.getPoint();
                     if (isOverTab(p)) {
                         int tab = p.x / b.tabW;
-                        if (tab >= 0 && tab < 5) {
+                        if (tab >= 0 && tab < cardTitles.length) {
                             cards.show(StyledFrameMinecraft.this.getContentPane(), cardNames[tab]);
                             b.setTab(tab);
                         }
