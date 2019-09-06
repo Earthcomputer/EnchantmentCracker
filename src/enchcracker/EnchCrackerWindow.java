@@ -389,7 +389,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				} else {
 					thread = new Thread(() -> {
 						while (singleSeedCracker.isRunning()) {
-							progressBar.setProgress((float)singleSeedCracker.getSeedsSearched() / (float)singleSeedCracker.getPossibleSeeds());
+							// need this check, as it's possible this line might be hit before seedsSearched is set back to 0
+							if (singleSeedCracker.getSeedsSearched() <= singleSeedCracker.getPossibleSeeds()) {
+								progressBar.setProgress((float) singleSeedCracker.getSeedsSearched() / (float) singleSeedCracker.getPossibleSeeds());
+							}
 							try {
 								Thread.sleep(50);
 							} catch (InterruptedException e) {
