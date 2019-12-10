@@ -848,7 +848,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		outSlot = new JLabel("-");
 		outSlot.setFont(MCFont.standardFont);
 		outSlot.setToolTipText("The slot to enchant with");
-		outSlot.setBounds(204, 232, 120, 20);
+		outSlot.setBounds(204, 232, 64, 20);
 		manipPane.add(outSlot);
 
 		outBook = new JLabel("-");
