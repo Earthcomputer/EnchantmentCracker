@@ -65,7 +65,17 @@ public class Items {
 			TRIDENT = "trident",
 			TURTLE_HELMET = "turtle_helmet",
 			// 1.14
-			CROSSBOW = "crossbow";
+			CROSSBOW = "crossbow",
+			// 1.16
+			NETHERITE_HELMET = "netherite_helmet",
+			NETHERITE_CHESTPLATE = "netherite_chestplate",
+			NETHERITE_LEGGINGS = "netherite_leggings",
+			NETHERITE_BOOTS = "netherite_boots",
+			NETHERITE_SWORD = "netherite_sword",
+			NETHERITE_PICKAXE = "netherite_pickaxe",
+			NETHERITE_AXE = "netherite_axe",
+			NETHERITE_SHOVEL = "netherite_shovel",
+			NETHERITE_HOE = "netherite_hoe";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -92,7 +102,11 @@ public class Items {
 				|| DIAMOND_CHESTPLATE.equals(item)
 				|| DIAMOND_LEGGINGS.equals(item)
 				|| DIAMOND_BOOTS.equals(item)
-				|| TURTLE_HELMET.equals(item);
+				|| TURTLE_HELMET.equals(item)
+				|| NETHERITE_HELMET.equals(item)
+				|| NETHERITE_CHESTPLATE.equals(item)
+				|| NETHERITE_LEGGINGS.equals(item)
+				|| NETHERITE_BOOTS.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -121,7 +135,8 @@ public class Items {
 				|| STONE_SWORD.equals(item)
 				|| IRON_SWORD.equals(item)
 				|| GOLDEN_SWORD.equals(item)
-				|| DIAMOND_SWORD.equals(item);
+				|| DIAMOND_SWORD.equals(item)
+				|| NETHERITE_SWORD.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -134,7 +149,8 @@ public class Items {
 				|| STONE_AXE.equals(item)
 				|| IRON_AXE.equals(item)
 				|| GOLDEN_AXE.equals(item)
-				|| DIAMOND_AXE.equals(item);
+				|| DIAMOND_AXE.equals(item)
+				|| NETHERITE_AXE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -147,7 +163,8 @@ public class Items {
 				|| STONE_HOE.equals(item)
 				|| IRON_HOE.equals(item)
 				|| GOLDEN_HOE.equals(item)
-				|| DIAMOND_HOE.equals(item);
+				|| DIAMOND_HOE.equals(item)
+				|| NETHERITE_HOE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -164,11 +181,13 @@ public class Items {
 				|| IRON_PICKAXE.equals(item)
 				|| GOLDEN_PICKAXE.equals(item)
 				|| DIAMOND_PICKAXE.equals(item)
+				|| NETHERITE_PICKAXE.equals(item)
 				|| WOODEN_SHOVEL.equals(item)
 				|| STONE_SHOVEL.equals(item)
 				|| IRON_SHOVEL.equals(item)
 				|| GOLDEN_SHOVEL.equals(item)
-				|| DIAMOND_SHOVEL.equals(item);
+				|| DIAMOND_SHOVEL.equals(item)
+				|| NETHERITE_SHOVEL.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -212,6 +231,9 @@ public class Items {
 			if (item.startsWith("turtle_")) {
 				return 9;
 			}
+			if (item.startsWith("netherite_")) {
+				return 15;
+			}
 		}
 		if (isSword(item) || isTool(item) || isHoe(item)) {
 			if (item.startsWith("wooden_")) {
@@ -228,6 +250,9 @@ public class Items {
 			}
 			if (item.startsWith("diamond_")) {
 				return 10;
+			}
+			if (item.startsWith("netherite_")) {
+				return 15;
 			}
 		}
 		if (BOW.equals(item)) {
@@ -258,6 +283,16 @@ public class Items {
 				return Versions.V1_13;
 			case CROSSBOW:
 				return Versions.V1_14;
+			case NETHERITE_HELMET:
+			case NETHERITE_CHESTPLATE:
+			case NETHERITE_LEGGINGS:
+			case NETHERITE_BOOTS:
+			case NETHERITE_SWORD:
+			case NETHERITE_PICKAXE:
+			case NETHERITE_AXE:
+			case NETHERITE_SHOVEL:
+			case NETHERITE_HOE:
+				return Versions.V1_16;
 			default:
 				return Versions.V1_8;
 		}

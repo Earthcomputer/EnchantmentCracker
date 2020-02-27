@@ -53,4 +53,8 @@ public class ImagePanel extends JPanel {
     public Dimension getPreferredSize() {
         return getSize();
     }
+
+    public int getImageCount() {
+        return backgroundImage.length;
+    }
 }

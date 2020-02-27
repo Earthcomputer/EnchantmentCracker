@@ -16,6 +16,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import static enchcracker.Items.*;
+
 public class EnchCrackerWindow extends StyledFrameMinecraft {
 	public static URL getFile(String name) {
 		File f = new File("data/"+name);
@@ -513,27 +515,31 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		final String[] itemToEnch = {null};
 		String[][][] itemGrid = new String[][][]{
 			{
-				{"diamond_helmet", "diamond_chestplate", "diamond_leggings", "diamond_boots", "bow", "fishing_rod", "crossbow"},
-				{"diamond_sword", "diamond_pickaxe", "diamond_axe", "diamond_shovel", "diamond_hoe", "trident", "book"}
+				{NETHERITE_HELMET, NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{NETHERITE_SWORD, NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE, TRIDENT, BOOK}
 			},
 			{
-				{"golden_helmet", "golden_chestplate", "golden_leggings", "golden_boots", "bow", "fishing_rod", "crossbow"},
-				{"golden_sword", "golden_pickaxe", "golden_axe", "golden_shovel", "golden_hoe", "trident", "book"}
+				{DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{DIAMOND_SWORD, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE, TRIDENT, BOOK}
 			},
 			{
-				{"iron_helmet", "iron_chestplate", "iron_leggings", "iron_boots", "bow", "fishing_rod", "crossbow"},
-				{"iron_sword", "iron_pickaxe", "iron_axe", "iron_shovel", "iron_hoe", "trident", "book"}
+				{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{GOLDEN_SWORD, GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, TRIDENT, BOOK}
 			},
 			{
-				{"turtle_helmet", "leather_chestplate", "leather_leggings", "leather_boots", "bow", "fishing_rod", "crossbow"},
-				{"stone_sword", "stone_pickaxe", "stone_axe", "stone_shovel", "stone_hoe", "trident", "book"}
+				{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, TRIDENT, BOOK}
 			},
 			{
-				{"leather_helmet", "leather_chestplate", "leather_leggings", "leather_boots", "bow", "fishing_rod", "crossbow"},
-				{"wooden_sword", "wooden_pickaxe", "wooden_axe", "wooden_shovel", "wooden_hoe", "trident", "book"}
+				{TURTLE_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{STONE_SWORD, STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, TRIDENT, BOOK}
+			},
+			{
+				{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, BOW, FISHING_ROD, CROSSBOW},
+				{WOODEN_SWORD, WOODEN_PICKAXE, WOODEN_AXE, WOODEN_SHOVEL, WOODEN_HOE, TRIDENT, BOOK}
 			}
 		};
-		itemPicker = new ImagePanel("ench_items", 5) {
+		itemPicker = new ImagePanel("ench_items", 6) {
 			private final Color good = new Color(0, 80, 0), bad = new Color(139, 139, 139);
 			@Override
 			public void paint(Graphics g) {
@@ -612,7 +618,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 		itemPicker.setToolTipText("The item you want to enchant");
 
-		ImagePanel matPicker = new ImagePanel("ench_mats", 5);
+		ImagePanel matPicker = new ImagePanel("ench_mats", 6);
 		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
 		manipPane.add(matPicker);
 		matPicker.addMouseListener(new MouseListener() {
@@ -620,7 +626,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			public void mouseClicked(MouseEvent e) {}
 			@Override
 			public void mousePressed(MouseEvent e) {
-				itemPicker.curImg = (itemPicker.curImg + 1) % 5;
+				do {
+					itemPicker.curImg = (itemPicker.curImg + 1) % matPicker.getImageCount();
+				} while (mcVersion.before(Materials.getIntroducedVersion(itemPicker.curImg)));
 				itemPicker.repaint();
 				matPicker.curImg = itemPicker.curImg;
 				repaint();
@@ -861,7 +869,13 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		versionDropDown.setSelectedItem(mcVersion);
 		versionDropDown.addActionListener(event -> {
 			Log.info("Changed Minecraft version to " + versionDropDown.getSelectedItem());
-			mcVersion = (Versions) versionDropDown.getSelectedItem();
+			Versions ver = (Versions) versionDropDown.getSelectedItem();
+			if (ver != null)
+				mcVersion = ver;
+			while (mcVersion.before(Materials.getIntroducedVersion(matPicker.curImg))) {
+				matPicker.curImg = (matPicker.curImg + 1) % matPicker.getImageCount();
+			}
+			itemPicker.curImg = matPicker.curImg;
 			repaint();
 		});
 		versionDropDown.setFont(MCFont.standardFont);
