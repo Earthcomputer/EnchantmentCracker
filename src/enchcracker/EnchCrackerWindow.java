@@ -50,6 +50,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private JTextField levelTextField;
 
 	private long playerSeed;
+	private boolean foundPlayerSeed = false;
 
 	private JLabel outDrop, outBook, outSlot;
 	private Versions mcVersion = Versions.latest();
@@ -482,6 +483,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			for (int seed1Low = 0; seed1Low < 65536; seed1Low++) {
 				if ((((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_0000L) == seed2High) {
 					playerSeed = ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+					foundPlayerSeed = true;
 					found = true;
 					break;
 				}
@@ -655,6 +657,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.setToolTipText("<html>Press to calculate how many items you <i>would</i> need to throw to get these enchantments</html>");
 		ProgressButton btnDone = new ProgressButton("button");
 		findEnchantment.addActionListener(event -> {
+			if (!foundPlayerSeed) {
+				JOptionPane.showMessageDialog(this, "You need to crack the player seed first!\nHead over to the first tab to do that.", "Enchantment Cracker", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
 			long seed = playerSeed;
 			if (itemToEnch[0] == null) return;
 			int maxShelvesVal = 0;
