@@ -156,25 +156,11 @@ public class Items {
 		return false;
 	}
 
-	public static boolean isHoe(String item) {
-		if (item.endsWith("_hoe")) {
-			// @formatter:off
-			return WOODEN_HOE.equals(item)
-				|| STONE_HOE.equals(item)
-				|| IRON_HOE.equals(item)
-				|| GOLDEN_HOE.equals(item)
-				|| DIAMOND_HOE.equals(item)
-				|| NETHERITE_HOE.equals(item);
-			// @formatter:on
-		}
-		return false;
-	}
-
 	public static boolean isTool(String item) {
 		if (isAxe(item)) {
 			return true;
 		}
-		if (item.endsWith("_pickaxe") || item.endsWith("_shovel")) {
+		if (item.endsWith("_pickaxe") || item.endsWith("_shovel") || item.endsWith("_hoe")) {
 			// @formatter:off
 			return WOODEN_PICKAXE.equals(item)
 				|| STONE_PICKAXE.equals(item)
@@ -187,7 +173,13 @@ public class Items {
 				|| IRON_SHOVEL.equals(item)
 				|| GOLDEN_SHOVEL.equals(item)
 				|| DIAMOND_SHOVEL.equals(item)
-				|| NETHERITE_SHOVEL.equals(item);
+				|| NETHERITE_SHOVEL.equals(item)
+				|| WOODEN_HOE.equals(item)
+				|| STONE_HOE.equals(item)
+				|| IRON_HOE.equals(item)
+				|| GOLDEN_HOE.equals(item)
+				|| DIAMOND_HOE.equals(item)
+				|| NETHERITE_HOE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -198,7 +190,6 @@ public class Items {
 		return isArmor(item)
 			|| isTool(item)
 			|| isSword(item)
-			|| isHoe(item)
 			|| BOW.equals(item)
 			|| CARROT_ON_A_STICK.equals(item)
 			|| ELYTRA.equals(item)
@@ -235,7 +226,7 @@ public class Items {
 				return 15;
 			}
 		}
-		if (isSword(item) || isTool(item) || isHoe(item)) {
+		if (isSword(item) || isTool(item)) {
 			if (item.startsWith("wooden_")) {
 				return 15;
 			}
