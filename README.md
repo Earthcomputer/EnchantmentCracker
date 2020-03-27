@@ -7,7 +7,7 @@ Cracking the XP seed in Minecraft and choosing your enchantments.
 - **The UI is subject to change and may have updated since the tutorials**
 
 ## Installation Instructions
-Download the latest zip file from [https://github.com/Earthcomputer/EnchantmentCracker/releases]
+Download the latest zip file from [the releases page](https://github.com/Earthcomputer/EnchantmentCracker/releases)
 and extract into a place you won't lose it, such as your Desktop.
 
 If you're a Windows user, you should double-click the batch file in the `bin` folder. Batch files
@@ -21,8 +21,8 @@ You must have Java installed to run the enchantment cracker. You may install Jav
 from [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
 ## Reporting Bugs
-Feel free to report bugs and ask any questions you may have at
-[https://github.com/Earthcomputer/EnchantmentCracker/issues], but
+Feel free to report bugs and ask any questions you may have on
+[the issue tracker](https://github.com/Earthcomputer/EnchantmentCracker/issues), but
 make sure to *search* whether anyone has reported your bug or asked
 your question before.
 
