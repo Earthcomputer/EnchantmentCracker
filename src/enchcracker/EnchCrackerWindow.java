@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -19,6 +22,10 @@ import javax.swing.text.*;
 import static enchcracker.Items.*;
 
 public class EnchCrackerWindow extends StyledFrameMinecraft {
+
+	private static final ResourceBundle RES_BUNDLE = ResourceBundle.getBundle("i18n.EnchantmentCracker", new UTF8ResourceBundleControl());
+	private static final NumberFormat DEC_FORMAT = DecimalFormat.getInstance();
+
 	public static URL getFile(String name) {
 		File f = new File("data/"+name);
 		if (f.exists() && f.isFile()) {
@@ -39,6 +46,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		}
 	}
 
+	public static String translate(String key) {
+		return RES_BUNDLE.getString(key).trim();
+	}
+
+	@SuppressWarnings("FieldCanBeLocal")
 	private JPanel contentPane;
 	private JTextField bookshelvesTextField;
 	private JTextField slot1TextField;
@@ -126,42 +138,39 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		}
 	}
 
-	public String number3sf(int val) {
-		int step = 0;
-		int rem = val;
-		String[] suff = new String[]{"", "k", "M", "B"};
-		while (rem > 999) {
-			step++;
-			rem /= 10;
+	public String getRemainingSeedsText(int val) {
+		String[] translations = {"enchCrack.remaining", "enchCrack.remaining.thousand", "enchCrack.remaining.million", "enchCrack.remaining.billion"};
+
+		double factor = 1.0 / 1000;
+		int n = val;
+		int suffix = -1;
+		while (n > 0) {
+			n /= 1000;
+			factor *= 1000;
+			suffix++;
 		}
-		String num = "" + rem;
-		int pos = step % 3;
-		if (pos != 0) num = num.substring(0, pos) + "." + num.substring(pos);
-		return num + suff[(step+2)/3];
-	}
 
-	private String niceEnch(String ench) {
-		String[] words = ench.trim().split("_");
-		for (int a = 0; a < words.length; a++) words[a] = words[a].substring(0,1).toUpperCase() + words[a].substring(1).toLowerCase();
-
-		// some enchantments are long
-		if (words.length == 2 && words[1].equals("Protection")) words[1] = "Prot";
-		if (words.length == 3 && words[2].equals("Arthropods")) words[2] = "Arth";
-
-		String res = "";
-		for (String w : words) {
-			if (res.length() > 0) res += " ";
-			res += w;
+		double significand = val / factor;
+		int multiplier = 1;
+		while (significand < 100) {
+			significand *= 10;
+			multiplier *= 10;
 		}
-		return res;
+		significand = Math.round(significand);
+		significand /= multiplier;
+		return String.format(translate(translations[suffix]), DEC_FORMAT.format(significand));
 	}
 
 	private static CardLayout cards = new CardLayout();
 	final ImagePanel itemPicker;
 	public EnchCrackerWindow() {
-		super(cards, new String[]{"FindSeed", "Manip", "About"}, new String[]{"Enchantment Cracker", "Enchantment Calculator", "About"});
+		super(
+			cards,
+			new String[]{"FindSeed", "Manip", "About"},
+			new String[]{translate("tab.enchantmentCracker"), translate("tab.enchantmentCalculator"), translate("tab.about")}
+		);
 
-		setTitle("Enchantment Cracker");
+		setTitle(translate("program.name"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		contentPane.setOpaque(false);
@@ -188,7 +197,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		int resetW = 80;
 		progressBar = new ProgressButton("button");
-		progressBar.setText("Check");
+		progressBar.setText(translate("enchCrack.check"));
 		progressBar.setBounds(0, findSeedPanel.getSize().height - progressBar.getPreferredSize().height, findSeedPanel.getSize().width - resetW - 6, progressBar.getPreferredSize().height);
 		findSeedPanel.add(progressBar);
 
@@ -242,30 +251,30 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)bookshelvesTextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(bookshelvesTextField);
 		bookshelvesTextField.setBounds(225, 46, 30, 20);
-		bookshelvesTextField.setToolTipText("The number of bookshelves exposed to the enchanting table");
+		bookshelvesTextField.setToolTipText(translate("enchCrack.bookshelves.tooltip"));
 
 		slot1TextField = new FixedTextField();
 		slot1TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot1TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot1TextField);
 		slot1TextField.setBounds(290, 130, 30, 20);
-		slot1TextField.setToolTipText("The number on the right of the top slot");
+		slot1TextField.setToolTipText(translate("enchCrack.xpCost1.tooltip"));
 
 		slot2TextField = new FixedTextField();
 		slot2TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot2TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot2TextField);
 		slot2TextField.setBounds(290, 168, 30, 20);
-		slot2TextField.setToolTipText("The number on the right of the middle slot");
+		slot2TextField.setToolTipText(translate("enchCrack.xpCost2.tooltip"));
 
 		slot3TextField = new FixedTextField();
 		slot3TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot3TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot3TextField);
 		slot3TextField.setBounds(290, 206, 30, 20);
-		slot3TextField.setToolTipText("The number on the right of the bottom slot");
+		slot3TextField.setToolTipText(translate("enchCrack.xpCost3.tooltip"));
 
-		progressBar.setToolTipText("Use this information to narrow down the possible XP seeds");
+		progressBar.setToolTipText(translate("enchCrack.check.tooltip"));
 		progressBar.addActionListener(event -> {
 			int bookshelves, slot1, slot2, slot3;
 			bookshelvesTextField.setBackground(Color.white);
@@ -324,11 +333,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						singleSeedCracker.setRunning(false);
 						switch (possibleSeeds) {
 							case 0:
-								progressBar.setText("No possible seeds");
+								progressBar.setText(translate("enchCrack.impossible"));
 								progressBar.setProgress(Float.NaN);
 								break;
 							case 1:
-								progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								progressBar.setText(String.format(translate("enchCrack.result"), singleSeedCracker.getSeed()));
 								progressBar.setProgress(0f);
 								if (xpSeed1TextField.getText().isEmpty()) {
 									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
@@ -337,7 +346,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 								}
 								break;
 							default:
-								progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
+								progressBar.setText(getRemainingSeedsText(possibleSeeds));
 								progressBar.setProgress(-1f);
 								break;
 						}
@@ -350,11 +359,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 						singleSeedCracker.setRunning(false);
 						switch (possibleSeeds) {
 							case 0:
-								progressBar.setText("No possible seeds");
+								progressBar.setText(translate("enchCrack.impossible"));
 								progressBar.setProgress(Float.NaN);
 								break;
 							case 1:
-								progressBar.setText(String.format("XP seed: %08X", singleSeedCracker.getSeed()));
+								progressBar.setText(String.format(translate("enchCrack.result"), singleSeedCracker.getSeed()));
 								progressBar.setProgress(Float.NaN);
 								if (xpSeed1TextField.getText().isEmpty()) {
 									xpSeed1TextField.setText(String.format("%08X", singleSeedCracker.getSeed()));
@@ -363,7 +372,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 								}
 								break;
 							default:
-								progressBar.setText("Possible seeds: " + number3sf(possibleSeeds));
+								progressBar.setText(getRemainingSeedsText(possibleSeeds));
 								progressBar.setProgress(-1f);
 								break;
 						}
@@ -415,10 +424,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		ProgressButton btnCalculate = new ProgressButton("button");
 
 		JButton btnResetCracker = new ProgressButton("button");
-		btnResetCracker.setText("Reset");
+		btnResetCracker.setText(translate("enchCrack.reset"));
 		btnResetCracker.setBounds(findSeedPanel.getSize().width - resetW, findSeedPanel.getSize().height - progressBar.getPreferredSize().height, resetW, progressBar.getPreferredSize().height);
 		findSeedPanel.add(btnResetCracker);
-		btnResetCracker.setToolTipText("Reset the XP seed cracker so a new XP seed can be cracked");
+		btnResetCracker.setToolTipText(translate("enchCrack.reset.tooltip"));
 		btnResetCracker.addActionListener(event -> {
 			Log.info("Reset the cracker");
 			singleSeedCracker.abortAndThen(() -> {
@@ -427,14 +436,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				slot1TextField.setText("");
 				slot2TextField.setText("");
 				slot3TextField.setText("");
-				progressBar.setText("Check");
+				progressBar.setText(translate("enchCrack.check"));
 				progressBar.setProgress(-1f);
-				btnCalculate.setText("Calculate Seed");
+				btnCalculate.setText(translate("enchCrack.calculate"));
 				btnCalculate.setProgress(-1f);
 			});
 		});
 
-		JLabel xpl1 = new JLabel("XP Seed 1");
+		JLabel xpl1 = new JLabel(translate("enchCrack.xpSeed1"));
 		xpl1.setFont(MCFont.standardFont);
 		xpl1.setBounds(0, 0, 102, 20);
 		findSeedPanel.add(xpl1);
@@ -444,9 +453,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)xpSeed1TextField.getDocument()).setDocumentFilter(hexFilter);
 		xpSeed1TextField.setBounds(0, 20, 102, 20);
 		findSeedPanel.add(xpSeed1TextField);
-		xpSeed1TextField.setToolTipText("The first consecutive XP seed");
+		xpSeed1TextField.setToolTipText(translate("enchCrack.xpSeed1.tooltip"));
 
-		JLabel xpl2 = new JLabel("XP Seed 2");
+		JLabel xpl2 = new JLabel(translate("enchCrack.xpSeed2"));
 		xpl2.setFont(MCFont.standardFont);
 		xpl2.setBounds(0, 40, 102, 20);
 		findSeedPanel.add(xpl2);
@@ -456,9 +465,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)xpSeed2TextField.getDocument()).setDocumentFilter(hexFilter);
 		xpSeed2TextField.setBounds(0, 60, 102, 20);
 		findSeedPanel.add(xpSeed2TextField);
-		xpSeed2TextField.setToolTipText("The second consecutive XP seed");
+		xpSeed2TextField.setToolTipText(translate("enchCrack.xpSeed2.tooltip"));
 
-		btnCalculate.setText("Calculate Seed");
+		btnCalculate.setText(translate("enchCrack.calculate"));
 		btnCalculate.addActionListener(event -> {
 			boolean found;
 			int xpSeed1, xpSeed2;
@@ -595,7 +604,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				enchList.removeAll();
 				for (int a = 0; a < fullList.size(); a++) {
 					Enchantments.EnchantmentInstance inst = fullList.get(a);
-					JLabel enchLabel = new JLabel(niceEnch(inst.enchantment));
+					JLabel enchLabel = new JLabel(translate("ench." + inst.enchantment));
 					enchLabel.setFont(MCFont.standardFont);
 					enchLabel.setBounds(2, a*26, 154, 24);
 					enchList.add(enchLabel);
@@ -618,7 +627,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
-		itemPicker.setToolTipText("The item you want to enchant");
+		itemPicker.setToolTipText(translate("enchCalc.item.tooltip"));
 
 		ImagePanel matPicker = new ImagePanel("ench_mats", 6);
 		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
@@ -642,7 +651,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
-		matPicker.setToolTipText("The material of the item you want to enchant");
+		matPicker.setToolTipText(translate("enchCalc.material.tooltip"));
 
 		FixedTextField maxShelves = new FixedTextField();
 		maxShelves.setText("15");
@@ -650,15 +659,15 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		((PlainDocument)maxShelves.getDocument()).setDocumentFilter(numberFilter);
 		maxShelves.setBounds(268, 12, 30, 20);
 		manipPane.add(maxShelves);
-		maxShelves.setToolTipText("The maximum number of bookshelves to use");
+		maxShelves.setToolTipText(translate("enchCalc.maxBookshelves.tooltip"));
 
 		ProgressButton findEnchantment = new ProgressButton("button");
-		findEnchantment.setText("Calculate");
-		findEnchantment.setToolTipText("<html>Press to calculate how many items you <i>would</i> need to throw to get these enchantments</html>");
+		findEnchantment.setText(translate("enchCalc.calculate"));
+		findEnchantment.setToolTipText(translate("enchCalc.calculate.tooltip"));
 		ProgressButton btnDone = new ProgressButton("button");
 		findEnchantment.addActionListener(event -> {
 			if (!foundPlayerSeed) {
-				JOptionPane.showMessageDialog(this, "You need to crack the player seed first!\nHead over to the first tab to do that.", "Enchantment Cracker", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, translate("enchCalc.playerSeedNotFound"), translate("program.name"), JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 			long seed = playerSeed;
@@ -788,19 +797,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 			EnchCrackerWindow.this.timesNeeded = timesNeeded;
 			if (timesNeeded == -2) {
-				outDrop.setText("No match");
+				outDrop.setText(translate("enchCalc.impossible"));
 				outBook.setText("-");
 				outSlot.setText("-");
 				Log.info("Impossible combination");
 				btnDone.setProgress(Float.NaN);
 			} else if (timesNeeded == -1) {
-				outDrop.setText("No dummy");
+				outDrop.setText(translate("enchCalc.noDummy"));
 				outBook.setText(""+bookshelvesNeeded);
 				outSlot.setText(""+(slot + 1));
 				Log.info("No dummy, b = " + bookshelvesNeeded + ", s = " + (slot + 1));
 				btnDone.setProgress(-1);
 			} else {
-				if (timesNeeded > 63) outDrop.setText("64x" + (timesNeeded / 64) + " + " + (timesNeeded % 64));
+				if (timesNeeded > 63) outDrop.setText(String.format(translate("enchCalc.stackFormat"), timesNeeded / 64, timesNeeded % 64));
 				else outDrop.setText(""+timesNeeded);
 				outBook.setText(""+bookshelvesNeeded);
 				outSlot.setText(""+(slot + 1));
@@ -812,9 +821,9 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.setBounds(6, 190, 264, 24);
 		manipPane.add(findEnchantment);
 
-		btnDone.setText("Done");
+		btnDone.setText(translate("enchCalc.done"));
 		btnDone.setProgress(Float.NaN);
-		btnDone.setToolTipText("Press to let the Cracker know that you have gone for these enchantments");
+		btnDone.setToolTipText(translate("enchCalc.done.tooltip"));
 		btnDone.addActionListener(event -> {
 			Log.info("Enchanted and applied changes");
 			if (timesNeeded == -2 || chosenSlot == -1) {
@@ -855,19 +864,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		outDrop = new JLabel("-");
 		outDrop.setFont(MCFont.standardFont);
-		outDrop.setToolTipText("The amount of items to throw out");
+		outDrop.setToolTipText(translate("enchCalc.throwCount.tooltip"));
 		outDrop.setBounds(40, 232, 120, 20);
 		manipPane.add(outDrop);
 
 		outSlot = new JLabel("-");
 		outSlot.setFont(MCFont.standardFont);
-		outSlot.setToolTipText("The slot to enchant with");
+		outSlot.setToolTipText(translate("enchCalc.slot.tooltip"));
 		outSlot.setBounds(204, 232, 64, 20);
 		manipPane.add(outSlot);
 
 		outBook = new JLabel("-");
 		outBook.setFont(MCFont.standardFont);
-		outBook.setToolTipText("The number of bookshelves to enchant with");
+		outBook.setToolTipText(translate("enchCalc.bookshelves.tooltip"));
 		outBook.setBounds(292, 232, 120, 20);
 		manipPane.add(outBook);
 
@@ -888,7 +897,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		versionDropDown.setBounds(5, 270, 180, 20);
 		manipPane.add(versionDropDown);
 
-		JLabel lblLevel = new JLabel("Level: ");
+		JLabel lblLevel = new JLabel(translate("enchCalc.level") + " ");
 		lblLevel.setFont(MCFont.standardFont);
 		lblLevel.setBounds(205, 270, 62, 20);
 		manipPane.add(lblLevel);
@@ -899,7 +908,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
         manipPane.add(levelTextField);
         levelTextField.setText("999");
         levelTextField.setBounds(270, 270, 45, 20);
-        levelTextField.setToolTipText("The current level of the player. Allows finding enchantments at level 30 and below.");
+        levelTextField.setToolTipText(translate("enchCalc.level.tooltip"));
 
 		// About section
 
@@ -908,56 +917,31 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		contentPane.add(aboutPane, "About");
 		aboutPane.setLayout(new BoxLayout(aboutPane, BoxLayout.Y_AXIS));
 
-		JLabel aboutText1 = new JLabel(
-			"<html>Enchantment Cracker "+verText()+"<br>Original version by Earthcomputer<br>Speed and UI improvements by Hexicube<br><br>Tutorial and Explanation:</html>"
-		);
-		aboutPane.add(aboutText1);
-		JLabel youtubePage = new JLabel("<html><a href=\\\"https://youtu.be/hfiTZF0hlzw\\\">Minecraft, Vanilla Survival: Cracking the Enchantment Seed</a></html>");
-		youtubePage.setToolTipText("https://youtu.be/hfiTZF0hlzw");
-		youtubePage.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				browse("https://youtu.be/hfiTZF0hlzw");
+		String[] aboutLines = String.format(translate("program.about"), verText()).split("\n");
+		for (String line : aboutLines) {
+			if (line.startsWith("LINK")) {
+				String[] parts = line.split(" ");
+				if (parts.length >= 3) {
+					String url = parts[1];
+					String text = Arrays.stream(parts).skip(2).collect(Collectors.joining(" "));
+					JLabel label = new JLabel(String.format("<html><a href=\\\"%s\\\">%s</a></html>", url, text));
+					label.setToolTipText(url);
+					label.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							browse(url);
+						}
+					});
+					label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					aboutPane.add(label);
+					continue;
+				}
+			} else if (line.isEmpty()) {
+				aboutPane.add(new JLabel("<html><br/></html>"));
+				continue;
 			}
-		});
-		youtubePage.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		aboutPane.add(youtubePage);
-
-		JLabel aboutText2 = new JLabel(
-				"<html><br>Imgur album:</html>"
-		);
-		aboutPane.add(aboutText2);
-		JLabel imgurPage = new JLabel("<html><a href=\\\"https://imgur.com/a/oaxCC5x\\\">MC Enchantment Cracker Tutorial</a></html>");
-		imgurPage.setToolTipText("https://imgur.com/a/oaxCC5x");
-		imgurPage.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				browse("https://imgur.com/a/oaxCC5x");
-			}
-		});
-		imgurPage.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		aboutPane.add(imgurPage);
-
-		JLabel aboutText3 = new JLabel(
-				"<html><br>GitHub page:</html>"
-		);
-		aboutPane.add(aboutText3);
-		JLabel githubPage = new JLabel(
-				"<html><a href = \"https://github.com/Earthcomputer/EnchantmentCracker\">Earthcomputer/EnchantmentCracker</a></html>");
-		githubPage.setToolTipText("https://github.com/Earthcomputer/EnchantmentCracker");
-		githubPage.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				browse("https://github.com/Earthcomputer/EnchantmentCracker");
-			}
-		});
-		githubPage.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		aboutPane.add(githubPage);
-
-		JLabel aboutText4 = new JLabel(
-				"<html><br>Please report any bugs you find on the issue tracker.<br>Make sure to include the enchcracker.log file.</html>"
-		);
-		aboutPane.add(aboutText4);
+			aboutPane.add(new JLabel("<html>" + line + "</html>"));
+		}
 
 		Insets i = getInsets();
 		Insets i2 = rootPane.getBorder().getBorderInsets(this);

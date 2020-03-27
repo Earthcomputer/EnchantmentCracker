@@ -49,3 +49,16 @@ then use `File > Import > General > Existing Projects into Workspace` inside
 Eclipse. Navigate to the EnchantmentCracker folder and click import.
 
 If you use IntelliJ IDEA, it can import the Gradle project directly.
+Most contributions are accepted via
+[pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
+
+If you want to add translations to the project, you are welcome to do so!
+You do this by adding a new `.properties` file under `resources/i18n`
+representing your added language, then create a pull request adding that file.
+As creating a pull request may be tricky if you are not used to coding,
+translators may instead create an issue and upload their properties file, and
+I will add it in myself.
+
+Note that if you do make translations, I will not be able to update most of them in line
+with the default English translations, as I do not speak those languages, so you may have
+to keep them updated yourself.
