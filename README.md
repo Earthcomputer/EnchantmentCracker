@@ -49,6 +49,7 @@ then use `File > Import > General > Existing Projects into Workspace` inside
 Eclipse. Navigate to the EnchantmentCracker folder and click import.
 
 If you use IntelliJ IDEA, it can import the Gradle project directly.
+
 Most contributions are accepted via
 [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
