@@ -444,7 +444,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 
 		JLabel xpl1 = new JLabel(translate("enchCrack.xpSeed1"));
-		xpl1.setFont(MCFont.standardFont);
+		MCFont.setFontFor(xpl1);
 		xpl1.setBounds(0, 0, 140, 20);
 		findSeedPanel.add(xpl1);
 
@@ -456,7 +456,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		xpSeed1TextField.setToolTipText(translate("enchCrack.xpSeed1.tooltip"));
 
 		JLabel xpl2 = new JLabel(translate("enchCrack.xpSeed2"));
-		xpl2.setFont(MCFont.standardFont);
+		MCFont.setFontFor(xpl2);
 		xpl2.setBounds(0, 40, 140, 20);
 		findSeedPanel.add(xpl2);
 
@@ -605,7 +605,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				for (int a = 0; a < fullList.size(); a++) {
 					Enchantments.EnchantmentInstance inst = fullList.get(a);
 					JLabel enchLabel = new JLabel(translate("ench." + inst.enchantment));
-					enchLabel.setFont(MCFont.standardFont);
+					MCFont.setFontFor(enchLabel);
 					enchLabel.setBounds(2, a*26, 154, 24);
 					enchList.add(enchLabel);
 
@@ -898,7 +898,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		manipPane.add(versionDropDown);
 
 		JLabel lblLevel = new JLabel(translate("enchCalc.level") + " ");
-		lblLevel.setFont(MCFont.standardFont);
+		MCFont.setFontFor(lblLevel);
 		lblLevel.setBounds(205, 270, 62, 20);
 		manipPane.add(lblLevel);
 

@@ -80,7 +80,6 @@ public class ProgressButton extends JButton {
         g.drawImage(imgs[0], 0, 0, null);
         g.drawImage(imgs[2], getWidth()-edgeW, 0, null);
         g.drawImage(imgs[1], edgeW, 0, getWidth()-edgeW, edgeH, 0, 0, 1, edgeH, null);
-        g.setFont(MCFont.standardFont);
         if (isEnabled() || Float.isNaN(progress) || Float.isInfinite(progress)) {
             if (Float.isInfinite(progress)) {
                 g.setColor(new Color(0, 80, 0));
@@ -107,9 +106,10 @@ public class ProgressButton extends JButton {
     }
 
     private void drawButtonText(Graphics g, String t) {
+        g.setFont(MCFont.getFont(t));
         int w = g.getFontMetrics().stringWidth(t);
         if (w > getWidth() - 4) {
-            g.setFont(MCFont.standardFont.deriveFont(MCFont.standardFont.getSize2D() * (getWidth() - 4) / w));
+            g.setFont(g.getFont().deriveFont(g.getFont().getSize2D() * (getWidth() - 4) / w));
             w = g.getFontMetrics().stringWidth(t);
         }
         g.drawString(t, (getSize().width - w) / 2, (getHeight() - g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2 + g.getFontMetrics().getMaxAscent());

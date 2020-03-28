@@ -111,9 +111,9 @@ public abstract class StyledFrameMinecraft extends JFrame {
     public void paint(Graphics g) {
         super.paint(g);
         g.drawImage((held && over) ? btn2 : btn1, getWidth() - btn1.getWidth() - b.w, b.h+b.tabH, null);
-        g.setFont(MCFont.standardFont);
+        g.setFont(MCFont.getFont(cardTitles[b.tab]));
         g.setColor(Color.BLACK);
-        g.drawString(cardTitles[b.tab], 10, 34+b.tabH);
+        g.drawString(cardTitles[b.tab], 10, 5 + g.getFontMetrics().getMaxAscent() + b.tabH);
     }
 
     @Override
