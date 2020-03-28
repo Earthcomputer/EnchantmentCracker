@@ -445,7 +445,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		JLabel xpl1 = new JLabel(translate("enchCrack.xpSeed1"));
 		xpl1.setFont(MCFont.standardFont);
-		xpl1.setBounds(0, 0, 102, 20);
+		xpl1.setBounds(0, 0, 140, 20);
 		findSeedPanel.add(xpl1);
 
 		xpSeed1TextField = new FixedTextField();
@@ -457,7 +457,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		JLabel xpl2 = new JLabel(translate("enchCrack.xpSeed2"));
 		xpl2.setFont(MCFont.standardFont);
-		xpl2.setBounds(0, 40, 102, 20);
+		xpl2.setBounds(0, 40, 140, 20);
 		findSeedPanel.add(xpl2);
 
 		xpSeed2TextField = new FixedTextField();

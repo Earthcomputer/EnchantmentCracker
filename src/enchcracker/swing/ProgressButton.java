@@ -95,17 +95,24 @@ public class ProgressButton extends JButton {
                 color = Color.WHITE;
             g.setColor(color);
             String t = getText();
-            int w = g.getFontMetrics().stringWidth(t);
-            g.drawString(t, (getSize().width - w) / 2, 28);
+            drawButtonText(g, t);
         }
         else {
             g.setColor(new Color(0, 80, 0));
             g.fillRect(2, 2, Math.min(getWidth()-4, (int)((getWidth()-4)*progress)), getHeight()-4);
             g.setColor(Color.WHITE);
-            String t = "Progress: " + String.format("%02.0f", progress*100) + "%";
-            int w = g.getFontMetrics().stringWidth(t);
-            g.drawString(t, (getSize().width - w) / 2, 28);
+            String t = String.format(EnchCrackerWindow.translate("enchCrack.progress"), progress * 100);
+            drawButtonText(g, t);
         }
+    }
+
+    private void drawButtonText(Graphics g, String t) {
+        int w = g.getFontMetrics().stringWidth(t);
+        if (w > getWidth() - 4) {
+            g.setFont(MCFont.standardFont.deriveFont(MCFont.standardFont.getSize2D() * (getWidth() - 4) / w));
+            w = g.getFontMetrics().stringWidth(t);
+        }
+        g.drawString(t, (getSize().width - w) / 2, (getHeight() - g.getFontMetrics().getAscent() - g.getFontMetrics().getDescent()) / 2 + g.getFontMetrics().getMaxAscent());
     }
 
     @Override
