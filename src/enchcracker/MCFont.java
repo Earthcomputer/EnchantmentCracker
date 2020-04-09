@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class MCFont {
     public static Font standardFont;
-    public static Font backupFont = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+    public static Font backupFont = new Font(Font.DIALOG, Font.PLAIN, 16);
 
     static {
         try {
