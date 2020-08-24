@@ -63,3 +63,6 @@ I will add it in myself.
 Note that if you do make translations, I will not be able to update most of them in line
 with the default English translations, as I do not speak those languages, so you may have
 to keep them updated yourself.
+
+## Discord
+https://discord.gg/Jg7Bun7
