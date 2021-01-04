@@ -1,50 +1,73 @@
 package enchcracker;
 
 public class IntArray {
-    // more efficient implementation of ArrayList<Integer>
+    // IntArray that consists of pooled lists to avoid memory hogging when copying to a new array
+    // The old implementation that used a single large array effectively needed double the array size for any allocation
+    
+    private static final int BLOCKSIZE = 1000000;
 
-    private int[] list;
+    private int[][] lists;
     private int size;
 
-    private void addToList(int[] toAdd, int len) {
-        if (len == 0) return;
-        int newLen = list.length;
-        while (size + len >= newLen) newLen += 1000000;
-        if (newLen > list.length) {
-            int[] newArr = new int[newLen];
-            System.arraycopy(list, 0, newArr, 0, size);
-            list = newArr;
+    private void addToList(int[] toAdd, int start, int len) {
+        int curBlock = size / BLOCKSIZE;
+        int avail = BLOCKSIZE - (size % BLOCKSIZE);
+        int addPos = start;
+        len += start;
+        while (addPos < len) {
+            int rem = len - addPos;
+            if (rem <= avail) {
+                System.arraycopy(toAdd, addPos, lists[curBlock], size%BLOCKSIZE, rem);
+                size += rem;
+                if (size % BLOCKSIZE == 0 && lists[curBlock+1] == null) lists[curBlock+1] = new int[BLOCKSIZE];
+                addPos += rem;
+            }
+            else {
+                System.arraycopy(toAdd, addPos, lists[curBlock], size%BLOCKSIZE, avail);
+                curBlock++;
+                if (lists[curBlock] == null) lists[curBlock] = new int[BLOCKSIZE];
+                addPos += avail;
+                size += avail;
+                avail = BLOCKSIZE;
+            }
         }
-        System.arraycopy(toAdd, 0, list, size, len);
-        size += len;
     }
 
     public IntArray() {
-        list = new int[1000000];
+        lists = new int[1000][];
+        lists[0] = new int[BLOCKSIZE];
     }
 
     public void clear() {
-        // array size is not reduced to reduce number of allocations
         size = 0;
     }
 
     public void add(int i) {
-        if (list.length == size) {
-            int[] newArr = new int[list.length + 1000000];
-            System.arraycopy(list, 0, newArr, 0, size);
-            list = newArr;
-        }
-        list[size++] = i;
+        int id = size / BLOCKSIZE;
+        int pos = size % BLOCKSIZE;
+        lists[id][pos] = i;
+        size++;
+        if (size % BLOCKSIZE == 0 && lists[size / BLOCKSIZE] == null) lists[size / BLOCKSIZE] = new int[BLOCKSIZE];
     }
 
     public void addAll(int[] values, int amt) {
-        addToList(values, amt);
+        int pos = 0;
+        while (pos < amt) {
+            addToList(values, pos, Math.min(BLOCKSIZE, amt-pos));
+            pos += BLOCKSIZE;
+        }
     }
 
     public void addAll(IntArray values) {
-        addToList(values.list, values.size);
+        int remSize = values.size;
+        int curBlock = 0;
+        while (remSize > 0) {
+            addToList(values.lists[curBlock], 0, Math.min(BLOCKSIZE, remSize));
+            remSize -= BLOCKSIZE;
+            curBlock++;
+        }
     }
 
     public int size() { return size; }
-    public int get(int i) { return list[i]; }
+    public int get(int i) { return lists[i/BLOCKSIZE][i%BLOCKSIZE]; }
 }
