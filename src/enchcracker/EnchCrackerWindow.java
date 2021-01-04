@@ -76,6 +76,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		System.setProperty("sun.java2d.uiScale", "1");
 		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
 			// Write to log
 			Log.fatal("An unexpected error occurred", e);
