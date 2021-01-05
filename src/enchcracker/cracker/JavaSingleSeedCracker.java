@@ -60,7 +60,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		final int halfShelves = bookshelves / 2 + 1;
 		final int shelvesPlusOne = bookshelves + 1;
 
-		final int firstEarly = slot1 * 3 + 1;
+		final int firstEarly = slot1 * 3 + 2;
 		final int secondEarly = slot2 * 3 / 2;
 		final int secondSubOne = slot2 - 1;
 
