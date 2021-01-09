@@ -111,7 +111,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		printSystemDetails();
 
 		if (System.getProperty("sun.arch.data.model").equals("32")) {
-			int resp = JOptionPane.showConfirmDialog(null, "You are running a 32-bit version\nof java, you may experienced\ndegraded performance.\n\nContinue anyway?", translate("program.name"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			int resp = JOptionPane.showConfirmDialog(null, translate("program.warn32"), translate("program.name"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (resp != JOptionPane.OK_OPTION) System.exit(0);
 		}
 
