@@ -33,9 +33,15 @@ public class IntArray {
         }
     }
 
-    public IntArray() {
-        lists = new int[1000][];
+    public IntArray() { this(false); }
+
+    public IntArray(boolean isMainData) {
+        lists = new int[250][]; // not set to 101 just in case something changes
         lists[0] = new int[BLOCKSIZE];
+        if (isMainData && System.getProperty("sun.arch.data.model").equals("32")) {
+            Log.info("32-bit java detected, pre-allocating IntArray.");
+            for (int a = 1; a <= 101; a++) lists[a] = new int[BLOCKSIZE]; // maximum possible seeds is 100.x mil in 1.16
+        }
     }
 
     public void clear() {

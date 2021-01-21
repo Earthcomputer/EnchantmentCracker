@@ -110,6 +110,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		printSystemDetails();
 
+		if (System.getProperty("sun.arch.data.model").equals("32")) {
+			int resp = JOptionPane.showConfirmDialog(null, translate("program.warn32"), translate("program.name"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (resp != JOptionPane.OK_OPTION) System.exit(0);
+		}
+
 		// Note: Native cracker disabled as it is currently slower.
 		// Initialize seed cracker
 		//singleSeedCracker = new NativeSingleSeedCracker();
@@ -671,6 +676,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		findEnchantment.setToolTipText(translate("enchCalc.calculate.tooltip"));
 		ProgressButton btnDone = new ProgressButton("button");
 		findEnchantment.addActionListener(event -> {
+			findEnchantment.setProgress(-1);
 			if (!foundPlayerSeed) {
 				JOptionPane.showMessageDialog(this, translate("enchCalc.playerSeedNotFound"), translate("program.name"), JOptionPane.INFORMATION_MESSAGE);
 				return;

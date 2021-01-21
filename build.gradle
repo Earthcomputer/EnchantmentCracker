@@ -11,7 +11,7 @@ version = project.cracker_version
 group = 'net.earthcomputer'
 
 mainClassName = 'enchcracker.EnchCrackerWindow'
-applicationDefaultJvmArgs = ['-Xms2G', '-Xmx2G']
+applicationDefaultJvmArgs = ['-Xms1G', '-Xmx1G']
 distributions {
     main {
         contents {

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
-	private final IntArray possibleSeeds = new IntArray();
+	private final IntArray possibleSeeds = new IntArray(true);
 	private final AtomicLong seedsSearched = new AtomicLong(0);
 	private final AtomicBoolean abortRequested = new AtomicBoolean(false);
 
@@ -72,7 +72,7 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 
 		for (int i = 0; i < threadCount; i++) {
 			Thread t = new Thread(() -> {
-				final int[] myList = new int[10000000];
+				final int[] myList = new int[1000000];
 				int pos = 0;
 				final SimpleRandom myRNG = new SimpleRandom();
 
