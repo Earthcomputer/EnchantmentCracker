@@ -94,7 +94,9 @@ echo Failed to launch ${applicationName}!
 echo 1. Ensure you have installed Java correctly and that Java is in your PATH.
 echo 2. 64-bit Java is preferred for ${applicationName}. This catches a lot of people out. To check your Java version, run "java -version".
 echo 3. 1GB of RAM is a minimum requirement. ${applicationName} will fail to start if you don't have at least 1GB of RAM to spare.
-echo 4. If you still think this is an error, please report it to https://github.com/Earthcomputer/EnchantmentCracker/issues
+echo 4. Ensure that you have properly extracted ${applicationName} to a folder and are not running from the zip file.
+echo 5. Ensure that you extracted it into a normal directory, and not directly into the C drive or Program Files.
+echo 6. If you still think this is an error, please report it to https://github.com/Earthcomputer/EnchantmentCracker/issues
 pause
 rem Set variable ${exitEnvironmentVar} if you need the _script_ return code instead of
 rem the _cmd.exe /c_ return code!
