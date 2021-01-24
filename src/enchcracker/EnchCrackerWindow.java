@@ -62,7 +62,6 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private JTextField levelTextField;
 
 	private long playerSeed;
-	private boolean foundPlayerSeed = false;
 
 	private JLabel outDrop, outBook, outSlot;
 	private Versions mcVersion = Versions.latest();
@@ -251,6 +250,20 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				super.replace(fb, offset, length, string, attr);
 			}
 		};
+		DocumentFilter hexFilter12 = new DocumentFilter() {
+			@Override
+			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+				if (!string.matches("[\\da-fA-F]*")) return;
+				if (fb.getDocument().getLength() + string.length() > 12) return;
+				super.insertString(fb, offset, string, attr);
+			}
+			@Override
+			public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr) throws BadLocationException {
+				if (!string.matches("[\\da-fA-F]*")) return;
+				if (fb.getDocument().getLength() - length + string.length() > 12) return;
+				super.replace(fb, offset, length, string, attr);
+			}
+		};
 
 		bookshelvesTextField = new FixedTextField();
 		bookshelvesTextField.setFont(MCFont.standardFont);
@@ -263,21 +276,21 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		slot1TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot1TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot1TextField);
-		slot1TextField.setBounds(290, 130, 30, 20);
+		slot1TextField.setBounds(290, 154, 30, 20);
 		slot1TextField.setToolTipText(translate("enchCrack.xpCost1.tooltip"));
 
 		slot2TextField = new FixedTextField();
 		slot2TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot2TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot2TextField);
-		slot2TextField.setBounds(290, 168, 30, 20);
+		slot2TextField.setBounds(290, 192, 30, 20);
 		slot2TextField.setToolTipText(translate("enchCrack.xpCost2.tooltip"));
 
 		slot3TextField = new FixedTextField();
 		slot3TextField.setFont(MCFont.standardFont);
 		((PlainDocument)slot3TextField.getDocument()).setDocumentFilter(numberFilter);
 		findSeedPanel.add(slot3TextField);
-		slot3TextField.setBounds(290, 206, 30, 20);
+		slot3TextField.setBounds(290, 230, 30, 20);
 		slot3TextField.setToolTipText(translate("enchCrack.xpCost3.tooltip"));
 
 		progressBar.setToolTipText(translate("enchCrack.check.tooltip"));
@@ -428,6 +441,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			});
 		});
 		ProgressButton btnCalculate = new ProgressButton("button");
+		JTextField playerSeed = new JTextField();
 
 		JButton btnResetCracker = new ProgressButton("button");
 		btnResetCracker.setText(translate("enchCrack.reset"));
@@ -497,15 +511,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			found = false;
 			for (int seed1Low = 0; seed1Low < 65536; seed1Low++) {
 				if ((((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_0000L) == seed2High) {
-					playerSeed = ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
-					foundPlayerSeed = true;
+					playerSeed.setText(String.format("%12X", ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL));
 					found = true;
 					break;
 				}
 			}
 			if (found) {
-				Log.info("Played seed calculated as " + Long.toHexString(playerSeed));
-				btnCalculate.setText(String.format("%012X", playerSeed));
+				Log.info("Played seed calculated as " + playerSeed.getText());
+				btnCalculate.setText("Success!");
 				btnCalculate.setProgress(Float.POSITIVE_INFINITY);
 			} else {
 				Log.info("No player seed found");
@@ -515,6 +528,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 		btnCalculate.setBounds(0, 84, 152, 22);
 		findSeedPanel.add(btnCalculate);
+
+		playerSeed.setFont(MCFont.standardFont);
+		playerSeed.setBounds(0, 110, 152, 22);
+		((PlainDocument)playerSeed.getDocument()).setDocumentFilter(hexFilter12);
+		findSeedPanel.add(playerSeed);
 
 		// --- Enchantment Calculator section
 
@@ -677,11 +695,11 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		ProgressButton btnDone = new ProgressButton("button");
 		findEnchantment.addActionListener(event -> {
 			findEnchantment.setProgress(-1);
-			if (!foundPlayerSeed) {
+			if (playerSeed.getText().isEmpty()) {
 				JOptionPane.showMessageDialog(this, translate("enchCalc.playerSeedNotFound"), translate("program.name"), JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
-			long seed = playerSeed;
+			long seed = Long.valueOf(playerSeed.getText(), 16);
 			if (itemToEnch[0] == null) return;
 			int maxShelvesVal = 0;
 			try {
@@ -841,18 +859,19 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				// nothing happened, since it was impossible anyway
 				return;
 			}
+			long curSeed = Long.valueOf(playerSeed.getText(), 16);
 			if (timesNeeded != -1) {
 				// items thrown
 				for (int i = 0; i < timesNeeded; i++) {
 					for (int j = 0; j < 4; j++) {
-						playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+						curSeed = (curSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
 					}
 				}
 				// dummy enchantment
-				playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+				curSeed = (curSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
 			}
 			// actual enchantment
-			playerSeed = (playerSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
+			curSeed = (curSeed * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL;
 
 			try {
 				int playerLevel = Integer.parseInt(levelTextField.getText());
@@ -864,6 +883,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			} catch (NumberFormatException e) {
 				Log.info("Could not update player level text");
 			}
+			playerSeed.setText(String.format("%12X", curSeed));
 			timesNeeded = -2;
 			outDrop.setText("-");
 			outBook.setText("-");
