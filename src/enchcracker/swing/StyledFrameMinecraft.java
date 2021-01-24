@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class StyledFrameMinecraft extends JFrame {
-    private BufferedImage btn1, btn2;
+    private BufferedImage btnClose1, btnClose2, btnPin1, btnPin2;
     private boolean held, over, heldTab;
     private StyledBorder b;
     private String[] cardTitles;
@@ -24,10 +24,19 @@ public abstract class StyledFrameMinecraft extends JFrame {
             if (closeButton.getWidth() != closeButton.getHeight() * 2)
                 throw new IllegalArgumentException("Button width must be double button height.");
             int h = closeButton.getHeight();
-            btn1 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
-            btn1.createGraphics().drawImage(closeButton, 0, 0, null);
-            btn2 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
-            btn2.createGraphics().drawImage(closeButton, -h, 0, null);
+            btnClose1 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
+            btnClose1.createGraphics().drawImage(closeButton, 0, 0, null);
+            btnClose2 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
+            btnClose2.createGraphics().drawImage(closeButton, -h, 0, null);
+
+            BufferedImage pinButton = ImageIO.read(EnchCrackerWindow.getFile("buttonblue.png"));
+            if (pinButton.getWidth() != pinButton.getHeight() * 2)
+                throw new IllegalArgumentException("Button width must be double button height.");
+            h = pinButton.getHeight();
+            btnPin1 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
+            btnPin1.createGraphics().drawImage(pinButton, 0, 0, null);
+            btnPin2 = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
+            btnPin2.createGraphics().drawImage(pinButton, -h, 0, null);
 
             setUndecorated(true);
             setBackground(new Color(255, 255, 255, 0));
@@ -49,14 +58,14 @@ public abstract class StyledFrameMinecraft extends JFrame {
             public void mouseDragged(MouseEvent e) {
                 if (held) {
                     boolean old = over;
-                    over = isOverBtn(e.getPoint());
+                    over = isOverCloseBtn(e.getPoint());
                     if (old != over) repaint();
                 }
                 else if (!heldTab) setLocation(e.getXOnScreen() - dragX[0], e.getYOnScreen() - dragY[0]);
             }
             @Override
             public void mouseMoved(MouseEvent e) {
-                over = isOverBtn(e.getPoint());
+                over = isOverCloseBtn(e.getPoint());
             }
         });
         getRootPane().addMouseListener(new MouseListener() {
@@ -66,7 +75,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
             public void mousePressed(MouseEvent e) {
                 dragX[0] = e.getX();
                 dragY[0] = e.getY();
-                if (isOverBtn(e.getPoint())) {
+                if (isOverCloseBtn(e.getPoint())) {
                     held = true;
                     repaint();
                 }
@@ -87,6 +96,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
                 }
                 held = false;
                 heldTab = false;
+                if (isOverPinBtn(e.getPoint())) setAlwaysOnTop(!isAlwaysOnTop());
                 repaint();
             }
             @Override
@@ -98,9 +108,14 @@ public abstract class StyledFrameMinecraft extends JFrame {
         getRootPane().setToolTipText("Ilmumbo");
     }
 
-    private boolean isOverBtn(Point p) {
-        return (p.x >= (getWidth()-btn1.getWidth()-b.w) && p.x < (getWidth()-b.w) &&
-                p.y >= (b.h+b.tabH) && p.y < (b.h+b.tabH+btn1.getHeight()));
+    private boolean isOverCloseBtn(Point p) {
+        return (p.x >= (getWidth()- btnClose1.getWidth()-b.w) && p.x < (getWidth()-b.w) &&
+                p.y >= (b.h+b.tabH) && p.y < (b.h+b.tabH+ btnClose1.getHeight()));
+    }
+
+    private boolean isOverPinBtn(Point p) {
+        return (p.x >= (getWidth()- btnClose1.getWidth() - btnPin1.getWidth()-b.w-4) && p.x < (getWidth()- btnClose1.getWidth()-b.w-4) &&
+                p.y >= (b.h+b.tabH) && p.y < (b.h+b.tabH+ btnPin1.getHeight()));
     }
 
     private boolean isOverTab(Point p) {
@@ -110,7 +125,8 @@ public abstract class StyledFrameMinecraft extends JFrame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.drawImage((held && over) ? btn2 : btn1, getWidth() - btn1.getWidth() - b.w, b.h+b.tabH, null);
+        g.drawImage((held && over) ? btnClose2 : btnClose1, getWidth() - btnClose1.getWidth() - b.w, b.h+b.tabH, null);
+        g.drawImage(isAlwaysOnTop() ? btnPin2 : btnPin1, getWidth() - btnClose1.getWidth() - btnPin1.getWidth() - b.w - 4, b.h+b.tabH, null);
         g.setFont(MCFont.getFont(cardTitles[b.tab]));
         g.setColor(Color.BLACK);
         g.drawString(cardTitles[b.tab], 10, 5 + g.getFontMetrics().getMaxAscent() + b.tabH);
