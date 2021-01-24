@@ -42,7 +42,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
             setBackground(new Color(255, 255, 255, 0));
             getRootPane().setOpaque(false);
             b = new StyledBorder(ImageIO.read(EnchCrackerWindow.getFile("mcframe.png")), ImageIO.read(EnchCrackerWindow.getFile("tabs.png")),
-                                 new String[]{"experience_bottle", "enchanted_book", "cookie"}, h);
+                    new String[]{"glass_bottle", "book", "apple"}, new String[]{"experience_bottle", "enchanted_book", "golden_apple"}, h);
             getRootPane().setBorder(b);
         }
         catch (IOException e) {
@@ -158,6 +158,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
         private BufferedImage[][] edges;
         private BufferedImage[] tabImages;
         private BufferedImage[] tabIconList;
+        private BufferedImage[] tabIconListSelected;
         private final int w;
         private final int h;
         final int frameH, tabH, tabW;
@@ -168,14 +169,19 @@ public abstract class StyledFrameMinecraft extends JFrame {
             repaint();
         }
 
-        StyledBorder(BufferedImage frameEdge, BufferedImage tabs, String[] tabIcons, int frameH) {
+        StyledBorder(BufferedImage frameEdge, BufferedImage tabs, String[] tabIcons, String[] tabIconsSelected, int frameH) {
             tabIconList = new BufferedImage[3];
+            tabIconListSelected = new BufferedImage[3];
             for (int a = 0; a < 3; a++) {
                 try {
                     BufferedImage img = ImageIO.read(EnchCrackerWindow.getFile(tabIcons[a]+".png"));
                     int w = img.getWidth(), h = img.getHeight();
                     tabIconList[a] = new BufferedImage(w*2, h*2, BufferedImage.TYPE_INT_ARGB);
                     tabIconList[a].createGraphics().drawImage(img, 0, 0, w*2, h*2, 0, 0, w, h, null);
+                    img = ImageIO.read(EnchCrackerWindow.getFile(tabIconsSelected[a]+".png"));
+                    w = img.getWidth(); h = img.getHeight();
+                    tabIconListSelected[a] = new BufferedImage(w*2, h*2, BufferedImage.TYPE_INT_ARGB);
+                    tabIconListSelected[a].createGraphics().drawImage(img, 0, 0, w*2, h*2, 0, 0, w, h, null);
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.exit(0);
@@ -234,7 +240,7 @@ public abstract class StyledFrameMinecraft extends JFrame {
             g2.drawImage(edges[1][1], x+w, y+h+tabH, x+width-w, y+height-h, 0, 0, 1, 1, null);
 
             g2.drawImage(tabImages[tab], x, y, null);
-            for (int a = 0; a < 3; a++) g2.drawImage(tabIconList[a], a * 54 + 12, 12, null);
+            for (int a = 0; a < 3; a++) g2.drawImage((a == tab) ? tabIconListSelected[a] : tabIconList[a], a * 54 + 12, 12, null);
         }
         @Override
         public Insets getBorderInsets(Component c) {
