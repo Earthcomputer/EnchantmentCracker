@@ -100,9 +100,9 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 						if (seed.compareAndSet(curSeed, curSeed + blockSize)) {
 							for (; curSeed < last; curSeed++) {
 								myRNG.setSeed(curSeed);
-								if (test2[myRNG.next8and16()]) continue;
-								if (test4[myRNG.next8and16()]) continue;
-								if (test5[myRNG.next8and16()]) {
+								if (test2[myRNG.next8plus16()]) continue;
+								if (test4[myRNG.next8plus16()]) continue;
+								if (test5[myRNG.next8plus16()]) {
 									myList[pos++] = curSeed;
 									if (pos == myList.length) {
 										synchronized(possibleSeeds) { possibleSeeds.addAll(myList, myList.length); }
