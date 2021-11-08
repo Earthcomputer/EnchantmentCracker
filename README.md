@@ -1,8 +1,9 @@
 # Enchantment Cracker
 Cracking the XP seed in Minecraft and choosing your enchantments.
 
-## Discord
-https://discord.gg/Jg7Bun7
+## Social
+Discord: https://discord.gg/Jg7Bun7
+Patreon: https://www.patreon.com/earthcomputer
 
 ## Tutorials
 - [Original video tutorial](https://youtu.be/hfiTZF0hlzw)
