@@ -6,6 +6,8 @@ import enchcracker.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -51,12 +53,12 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	}
 
 	@SuppressWarnings("FieldCanBeLocal")
-	private JPanel contentPane;
-	private JTextField bookshelvesTextField;
-	private JTextField slot1TextField;
-	private JTextField slot2TextField;
-	private JTextField slot3TextField;
-	private ProgressButton progressBar;
+	private final JPanel contentPane;
+	private final JTextField bookshelvesTextField;
+	private final JTextField slot1TextField;
+	private final JTextField slot2TextField;
+	private final JTextField slot3TextField;
+	private final ProgressButton progressBar;
 	private JTextField xpSeed1TextField;
 	private JTextField xpSeed2TextField;
 	private JTextField levelTextField;
@@ -70,6 +72,37 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 	private int chosenSlot = -1;
 
 	private static AbstractSingleSeedCracker singleSeedCracker;
+
+	private static final Properties acknowledgedWarnings = new Properties();
+	private static final File acknowledgedWarningsFile = new File("acknowledgedWarnings.properties");
+
+	private static void showWarningMessage(String message, String warningId) {
+		if (Boolean.parseBoolean(acknowledgedWarnings.getProperty(warningId, "false"))) {
+			return;
+		}
+
+		int result = JOptionPane.showOptionDialog(
+				null,
+				makeFormattedText(message),
+				translate("program.name"),
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null,
+				new Object[] {UIManager.getString("OptionPane.okButtonText", RES_BUNDLE.getLocale()), translate("program.exit"), translate("program.dontShowAgain")},
+				UIManager.getString("OptionPane.okButtonText", RES_BUNDLE.getLocale())
+		);
+		if (result == 1) {
+			System.exit(0);
+		}
+		boolean acknowledged = result == 2;
+		acknowledgedWarnings.setProperty(warningId, Boolean.toString(acknowledged));
+		try (FileWriter writer = new FileWriter(acknowledgedWarningsFile)) {
+			acknowledgedWarnings.store(writer, "Acknowledged warnings");
+			writer.flush();
+		} catch (IOException e) {
+			Log.warn("Error saving acknowledged warnings", e);
+		}
+	}
 
 	/**
 	 * Launch the application.
@@ -109,9 +142,18 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 
 		printSystemDetails();
 
+		if (acknowledgedWarningsFile.exists()) {
+			try (FileReader reader = new FileReader(acknowledgedWarningsFile)) {
+				acknowledgedWarnings.load(reader);
+			} catch (IOException e) {
+				Log.warn("Failed to load acknowledged warnings file", e);
+			}
+		}
+
+		showWarningMessage(translate("program.clientcommands"), "clientcommands");
+
 		if (System.getProperty("sun.arch.data.model").equals("32")) {
-			int resp = JOptionPane.showConfirmDialog(null, translate("program.warn32"), translate("program.name"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (resp != JOptionPane.OK_OPTION) System.exit(0);
+			showWarningMessage(translate("program.warn32"), "warn32");
 		}
 
 		// Note: Native cracker disabled as it is currently slower.
@@ -942,13 +984,21 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
         levelTextField.setToolTipText(translate("enchCalc.level.tooltip"));
 
 		// About section
+		JPanel aboutPane = makeFormattedText(String.format(translate("program.about"), verText()));
+		contentPane.add(aboutPane, "About");
 
+		Insets i = getInsets();
+		Insets i2 = rootPane.getBorder().getBorderInsets(this);
+		setSize(i.left + i.right + findSeedPanel.getSize().width + i2.left + i2.right, i.top + i.bottom + findSeedPanel.getSize().height + i2.top + i2.bottom);
+		setLocationRelativeTo(null);
+	}
+
+	private static JPanel makeFormattedText(String unformattedText) {
 		JPanel aboutPane = new JPanel();
 		aboutPane.setOpaque(false);
-		contentPane.add(aboutPane, "About");
 		aboutPane.setLayout(new BoxLayout(aboutPane, BoxLayout.Y_AXIS));
 
-		String[] aboutLines = String.format(translate("program.about"), verText()).split("\n");
+		String[] aboutLines = unformattedText.split("\n");
 		for (String line : aboutLines) {
 			if (line.startsWith("LINK")) {
 				String[] parts = line.split(" ");
@@ -974,10 +1024,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			aboutPane.add(new JLabel("<html>" + line + "</html>"));
 		}
 
-		Insets i = getInsets();
-		Insets i2 = rootPane.getBorder().getBorderInsets(this);
-		setSize(i.left + i.right + findSeedPanel.getSize().width + i2.left + i2.right, i.top + i.bottom + findSeedPanel.getSize().height + i2.top + i2.bottom);
-		setLocationRelativeTo(null);
+		return aboutPane;
 	}
 
 	private static void browse(String url) {

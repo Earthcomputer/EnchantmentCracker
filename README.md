@@ -5,6 +5,15 @@ Cracking the XP seed in Minecraft and choosing your enchantments.
 Discord: https://discord.gg/Jg7Bun7
 Patreon: https://www.patreon.com/earthcomputer
 
+## You should probably be using the mod instead
+Clientcommands is a client-side mod which can do the same thing as this tool, but it's much less error prone.
+Unless you specifically want to avoid using a mod, you should probably use the mod instead.
+
+Links for clientcommands:
+- [Download](https://github.com/Earthcomputer/clientcommands/releases)
+  - First install [Fabric](https://fabricmc.net/use/), then download clientcommands and [Fabric API](https://modrinth.com/mod/fabric-api) and put them both into your mods folder.
+- [Wiki entry for Enchantment Cracking](https://github.com/Earthcomputer/clientcommands/wiki/cenchant)
+
 ## Tutorials
 - [Original video tutorial](https://youtu.be/hfiTZF0hlzw)
 - [Updated picture tutorial](https://imgur.com/a/oaxCC5x)
