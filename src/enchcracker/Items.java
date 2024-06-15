@@ -75,7 +75,9 @@ public class Items {
 			NETHERITE_PICKAXE = "netherite_pickaxe",
 			NETHERITE_AXE = "netherite_axe",
 			NETHERITE_SHOVEL = "netherite_shovel",
-			NETHERITE_HOE = "netherite_hoe";
+			NETHERITE_HOE = "netherite_hoe",
+			// 1.21
+			MACE = "mace";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -198,7 +200,8 @@ public class Items {
 			|| SHEARS.equals(item)
 			|| SHIELD.equals(item)
 			|| TRIDENT.equals(item)
-			|| CROSSBOW.equals(item);
+			|| CROSSBOW.equals(item)
+			|| MACE.equals(item);
 		// @formatter:on
 	}
 
@@ -258,6 +261,9 @@ public class Items {
 		if (CROSSBOW.equals(item)) {
 			return 1;
 		}
+		if (MACE.equals(item)) {
+			return 15;
+		}
 		if (BOOK.equals(item)) {
 			return 1;
 		}
@@ -284,6 +290,8 @@ public class Items {
 			case NETHERITE_SHOVEL:
 			case NETHERITE_HOE:
 				return Versions.V1_16;
+			case MACE:
+				return Versions.V1_21;
 			default:
 				return Versions.V1_8;
 		}

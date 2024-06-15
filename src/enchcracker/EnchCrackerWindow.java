@@ -592,60 +592,65 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		final String[] itemToEnch = {null};
 		String[][][] itemGrid = new String[][][]{
 			{
-				{NETHERITE_HELMET, NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{NETHERITE_SWORD, NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE, TRIDENT, BOOK}
+				{NETHERITE_HELMET, NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS, null},
+				{NETHERITE_SWORD, NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_SHOVEL, NETHERITE_HOE}
 			},
 			{
-				{DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{DIAMOND_SWORD, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE, TRIDENT, BOOK}
+				{DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, null},
+				{DIAMOND_SWORD, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SHOVEL, DIAMOND_HOE}
 			},
 			{
-				{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{GOLDEN_SWORD, GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE, TRIDENT, BOOK}
+				{GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, null},
+				{GOLDEN_SWORD, GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SHOVEL, GOLDEN_HOE}
 			},
 			{
-				{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, TRIDENT, BOOK}
+				{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, null},
+				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE}
 			},
 			{
-				{CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE, TRIDENT, BOOK}
+				{CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS, null},
+				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE}
 			},
 			{
-				{TURTLE_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{STONE_SWORD, STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE, TRIDENT, BOOK}
+				{TURTLE_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, null},
+				{STONE_SWORD, STONE_PICKAXE, STONE_AXE, STONE_SHOVEL, STONE_HOE}
 			},
 			{
-				{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, BOW, FISHING_ROD, CROSSBOW},
-				{WOODEN_SWORD, WOODEN_PICKAXE, WOODEN_AXE, WOODEN_SHOVEL, WOODEN_HOE, TRIDENT, BOOK}
+				{LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, null},
+				{WOODEN_SWORD, WOODEN_PICKAXE, WOODEN_AXE, WOODEN_SHOVEL, WOODEN_HOE}
+			},
+			{
+				{BOW, FISHING_ROD, CROSSBOW, TRIDENT, MACE},
+				{BOOK, null, null, null, null}
 			}
 		};
-		itemPicker = new ImagePanel("ench_items", 7) {
+		itemPicker = new ImagePanel("ench_items", 8) {
 			private final Color good = new Color(0, 80, 0), bad = new Color(139, 139, 139);
 			@Override
 			public void paint(Graphics g) {
-				int w = getWidth() / 7;
+				int w = getWidth() / 5;
 				int h = getHeight() / 2;
-				for (int x = 0; x < 7; x++) {
+				for (int x = 0; x < 5; x++) {
 					for (int y = 0; y < 2; y++) {
-						g.setColor((itemGrid[itemPicker.curImg][y][x].equals(itemToEnch[0])) ? good : bad);
+						g.setColor((itemGrid[itemPicker.curImg][y][x] != null && itemGrid[itemPicker.curImg][y][x].equals(itemToEnch[0])) ? good : bad);
 						g.fillRect(w*x, h*y, w, h);
 					}
 				}
 				super.paint(g);
 			}
 		};
-		itemPicker.setBounds(6,6,itemPicker.getSize().width,itemPicker.getSize().height);
+		itemPicker.setBounds(42,6,itemPicker.getSize().width,itemPicker.getSize().height);
 		manipPane.add(itemPicker);
 		itemPicker.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {}
 			@Override
 			public void mousePressed(MouseEvent e) {
-				int x = e.getX() * 7 / itemPicker.getSize().width;
-				if (x < 0 || x > 6) return;
+				int x = e.getX() * 5 / itemPicker.getSize().width;
+				if (x < 0 || x > 4) return;
 				int y = e.getY() * 2 / itemPicker.getSize().height;
 				if (y < 0 || y > 1) return;
+				if (itemGrid[itemPicker.curImg][y][x] == null) return;
 				itemToEnch[0] = itemGrid[itemPicker.curImg][y][x];
 				int level = 30;
 				int enchantability = Items.getEnchantability(itemToEnch[0]);
@@ -656,7 +661,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				}
 				ArrayList<Enchantments.EnchantmentInstance> fullList = new ArrayList<>();
 				while (level > 0) {
-					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], false, mcVersion);
+					List<Enchantments.EnchantmentInstance> list = Enchantments.getHighestAllowedEnchantments(level, itemToEnch[0], mcVersion);
 					for (Enchantments.EnchantmentInstance inst : list) {
 						boolean contains = false;
 						for (Enchantments.EnchantmentInstance inst2 : fullList) {
@@ -699,7 +704,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 		itemPicker.setToolTipText(translate("enchCalc.item.tooltip"));
 
-		ImagePanel matPicker = new ImagePanel("ench_mats", 7);
+		ImagePanel matPicker = new ImagePanel("ench_mats", 8);
 		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
 		manipPane.add(matPicker);
 		matPicker.addMouseListener(new MouseListener() {
