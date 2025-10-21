@@ -77,7 +77,17 @@ public class Items {
 			NETHERITE_SHOVEL = "netherite_shovel",
 			NETHERITE_HOE = "netherite_hoe",
 			// 1.21
-			MACE = "mace";
+			MACE = "mace",
+            // 1.21.9
+            COPPER_HELMET = "copper_helmet",
+            COPPER_CHESTPLATE = "copper_chestplate",
+            COPPER_LEGGINGS = "copper_leggings",
+            COPPER_BOOTS = "copper_boots",
+            COPPER_SWORD = "copper_sword",
+            COPPER_PICKAXE = "copper_pickaxe",
+            COPPER_AXE = "copper_axe",
+            COPPER_SHOVEL = "copper_shovel",
+            COPPER_HOE = "copper_hoe";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -108,7 +118,11 @@ public class Items {
 				|| NETHERITE_HELMET.equals(item)
 				|| NETHERITE_CHESTPLATE.equals(item)
 				|| NETHERITE_LEGGINGS.equals(item)
-				|| NETHERITE_BOOTS.equals(item);
+				|| NETHERITE_BOOTS.equals(item)
+                || COPPER_HELMET.equals(item)
+                || COPPER_CHESTPLATE.equals(item)
+                || COPPER_LEGGINGS.equals(item)
+                || COPPER_BOOTS.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -138,7 +152,8 @@ public class Items {
 				|| IRON_SWORD.equals(item)
 				|| GOLDEN_SWORD.equals(item)
 				|| DIAMOND_SWORD.equals(item)
-				|| NETHERITE_SWORD.equals(item);
+				|| NETHERITE_SWORD.equals(item)
+                || COPPER_SWORD.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -152,7 +167,8 @@ public class Items {
 				|| IRON_AXE.equals(item)
 				|| GOLDEN_AXE.equals(item)
 				|| DIAMOND_AXE.equals(item)
-				|| NETHERITE_AXE.equals(item);
+				|| NETHERITE_AXE.equals(item)
+                || COPPER_AXE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -170,18 +186,21 @@ public class Items {
 				|| GOLDEN_PICKAXE.equals(item)
 				|| DIAMOND_PICKAXE.equals(item)
 				|| NETHERITE_PICKAXE.equals(item)
+                || COPPER_PICKAXE.equals(item)
 				|| WOODEN_SHOVEL.equals(item)
 				|| STONE_SHOVEL.equals(item)
 				|| IRON_SHOVEL.equals(item)
 				|| GOLDEN_SHOVEL.equals(item)
 				|| DIAMOND_SHOVEL.equals(item)
 				|| NETHERITE_SHOVEL.equals(item)
+                || COPPER_SHOVEL.equals(item)
 				|| WOODEN_HOE.equals(item)
 				|| STONE_HOE.equals(item)
 				|| IRON_HOE.equals(item)
 				|| GOLDEN_HOE.equals(item)
 				|| DIAMOND_HOE.equals(item)
-				|| NETHERITE_HOE.equals(item);
+				|| NETHERITE_HOE.equals(item)
+                || COPPER_HOE.equals(item);
 			// @formatter:on
 		}
 		return false;
@@ -228,6 +247,9 @@ public class Items {
 			if (item.startsWith("netherite_")) {
 				return 15;
 			}
+            if (item.startsWith("copper_")) {
+                return 8;
+            }
 		}
 		if (isSword(item) || isTool(item)) {
 			if (item.startsWith("wooden_")) {
@@ -248,6 +270,9 @@ public class Items {
 			if (item.startsWith("netherite_")) {
 				return 15;
 			}
+            if (item.startsWith("copper_")) {
+                return 13;
+            }
 		}
 		if (BOW.equals(item)) {
 			return 1;
@@ -292,6 +317,16 @@ public class Items {
 				return Versions.V1_16;
 			case MACE:
 				return Versions.V1_21;
+            case COPPER_HELMET:
+            case COPPER_CHESTPLATE:
+            case COPPER_LEGGINGS:
+            case COPPER_BOOTS:
+            case COPPER_SWORD:
+            case COPPER_PICKAXE:
+            case COPPER_AXE:
+            case COPPER_SHOVEL:
+            case COPPER_HOE:
+                return Versions.V1_21_9;
 			default:
 				return Versions.V1_8;
 		}

@@ -607,6 +607,10 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				{IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, null},
 				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE}
 			},
+            {
+                {COPPER_HELMET, COPPER_CHESTPLATE, COPPER_LEGGINGS, COPPER_BOOTS, null},
+                {COPPER_SWORD, COPPER_PICKAXE, COPPER_AXE, COPPER_SHOVEL, COPPER_HOE}
+            },
 			{
 				{CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS, null},
 				{IRON_SWORD, IRON_PICKAXE, IRON_AXE, IRON_SHOVEL, IRON_HOE}
@@ -624,7 +628,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				{BOOK, null, null, null, null}
 			}
 		};
-		itemPicker = new ImagePanel("ench_items", 8) {
+		itemPicker = new ImagePanel("ench_items", 9) {
 			private final Color good = new Color(0, 80, 0), bad = new Color(139, 139, 139);
 			@Override
 			public void paint(Graphics g) {
@@ -704,7 +708,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 		});
 		itemPicker.setToolTipText(translate("enchCalc.item.tooltip"));
 
-		ImagePanel matPicker = new ImagePanel("ench_mats", 8);
+		ImagePanel matPicker = new ImagePanel("ench_mats", 9);
 		matPicker.setBounds(298,42,matPicker.getSize().width,matPicker.getSize().height);
 		manipPane.add(matPicker);
 		matPicker.addMouseListener(new MouseListener() {
