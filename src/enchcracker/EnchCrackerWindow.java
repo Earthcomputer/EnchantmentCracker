@@ -545,15 +545,14 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 				Log.info("Calculate player seed failed, XP seed 2 invalid");
 				return;
 			}
-			Log.info("Calculating player seed with " + Integer.toHexString(xpSeed1) + ", "
-					+ Integer.toHexString(xpSeed2));
+			Log.info(String.format("Calculating player seed with %08x, %08x", xpSeed1, xpSeed2));
 			// Brute force the low bits
 			long seed1High = ((long) xpSeed1 << 16) & 0x0000_ffff_ffff_0000L;
 			long seed2High = ((long) xpSeed2 << 16) & 0x0000_ffff_ffff_0000L;
 			found = false;
 			for (int seed1Low = 0; seed1Low < 65536; seed1Low++) {
 				if ((((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_0000L) == seed2High) {
-					playerSeed.setText(String.format("%12X", ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL));
+					playerSeed.setText(String.format("%012X", ((seed1High | seed1Low) * 0x5deece66dL + 0xb) & 0x0000_ffff_ffff_ffffL));
 					found = true;
 					break;
 				}
