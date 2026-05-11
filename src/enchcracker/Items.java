@@ -87,7 +87,15 @@ public class Items {
             COPPER_PICKAXE = "copper_pickaxe",
             COPPER_AXE = "copper_axe",
             COPPER_SHOVEL = "copper_shovel",
-            COPPER_HOE = "copper_hoe";
+            COPPER_HOE = "copper_hoe",
+			// 1.21.11
+			NETHERITE_SPEAR = "netherite_spear",
+			DIAMOND_SPEAR = "diamond_spear",
+			GOLDEN_SPEAR = "golden_spear",
+			IRON_SPEAR = "iron_spear",
+			COPPER_SPEAR = "copper_spear",
+			STONE_SPEAR = "stone_spear",
+			WOODEN_SPEAR = "wooden_spear";
 	// @formatter:on
 
 	public static boolean isArmor(String item) {
@@ -159,6 +167,19 @@ public class Items {
 		return false;
 	}
 
+	public static boolean isSpear(String item) {
+		if (item.endsWith("_spear")) {
+			return WOODEN_SPEAR.equals(item)
+				|| STONE_SPEAR.equals(item)
+				|| IRON_SPEAR.equals(item)
+				|| GOLDEN_SPEAR.equals(item)
+				|| DIAMOND_SPEAR.equals(item)
+				|| NETHERITE_SPEAR.equals(item)
+				|| COPPER_SPEAR.equals(item);
+		}
+		return false;
+	}
+
 	public static boolean isAxe(String item) {
 		if (item.endsWith("_axe")) {
 			// @formatter:off
@@ -211,6 +232,7 @@ public class Items {
 		return isArmor(item)
 			|| isTool(item)
 			|| isSword(item)
+			|| isSpear(item)
 			|| BOW.equals(item)
 			|| CARROT_ON_A_STICK.equals(item)
 			|| ELYTRA.equals(item)
@@ -251,7 +273,7 @@ public class Items {
                 return 8;
             }
 		}
-		if (isSword(item) || isTool(item)) {
+		if (isSword(item) || isSpear(item) || isTool(item)) {
 			if (item.startsWith("wooden_")) {
 				return 15;
 			}
@@ -327,6 +349,14 @@ public class Items {
             case COPPER_SHOVEL:
             case COPPER_HOE:
                 return Versions.V1_21_9;
+			case NETHERITE_SPEAR:
+			case DIAMOND_SPEAR:
+			case GOLDEN_SPEAR:
+			case IRON_SPEAR:
+			case COPPER_SPEAR:
+			case STONE_SPEAR:
+			case WOODEN_SPEAR:
+				return Versions.V1_21_11;
 			default:
 				return Versions.V1_8;
 		}

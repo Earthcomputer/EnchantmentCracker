@@ -55,7 +55,9 @@ public class Enchantments {
 			// 1.21
 			DENSITY = "density",
 			BREACH = "breach",
-			WIND_BURST = "wind_burst";
+			WIND_BURST = "wind_burst",
+			// 1.21.11
+			LUNGE = "lunge";
 	// @formatter:on
 
 	// @formatter:off
@@ -101,7 +103,8 @@ public class Enchantments {
 				QUICK_CHARGE,
 				PIERCING,
 				DENSITY,
-				BREACH
+				BREACH,
+				LUNGE
 		);
 
 		// every enchantment with itself
@@ -167,11 +170,12 @@ public class Enchantments {
 		case SHARPNESS:
 		case SMITE:
 		case BANE_OF_ARTHROPODS:
-			return Items.isSword(item) || !primary && (Items.isAxe(item) || Items.MACE.equals(item));
+			return Items.isSword(item) || Items.isSpear(item) || !primary && (Items.isAxe(item) || Items.MACE.equals(item));
 		case FIRE_ASPECT:
-			return Items.isSword(item) || !primary && Items.MACE.equals(item);
+			return Items.isSword(item) || Items.isSpear(item) || !primary && Items.MACE.equals(item);
 		case KNOCKBACK:
 		case LOOTING:
+			return Items.isSword(item) || Items.isSpear(item);
 		case SWEEPING:
 			return Items.isSword(item);
 		case EFFICIENCY:
@@ -205,6 +209,8 @@ public class Enchantments {
 		case BREACH:
 		case WIND_BURST:
 			return Items.MACE.equals(item);
+		case LUNGE:
+			return Items.isSpear(item);
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -242,6 +248,7 @@ public class Enchantments {
 		case QUICK_CHARGE:
 		case SOUL_SPEED:
 		case WIND_BURST:
+		case LUNGE:
 			return 3;
 		case FROST_WALKER:
 		case KNOCKBACK:
@@ -347,6 +354,8 @@ public class Enchantments {
 			return 15 + (level - 1) * 9;
 		case WIND_BURST:
 			return 15 + (level - 1) * 9;
+		case LUNGE:
+			return 5 + (level - 1) * 8;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -436,6 +445,8 @@ public class Enchantments {
 			return 65 + (level - 1) * 9;
 		case WIND_BURST:
 			return 65 + (level - 1) * 9;
+		case LUNGE:
+			return 25 + (level - 1) * 8;
 		default:
 			throw new IllegalArgumentException("Unknown enchantment: " + enchantment);
 		}
@@ -459,6 +470,7 @@ public class Enchantments {
 		case LOYALTY:
 		case QUICK_CHARGE:
 		case DENSITY:
+		case LUNGE:
 			return version == Versions.V1_14 ? 10 : 5;
 		case BLAST_PROTECTION:
 		case RESPIRATION:
@@ -518,6 +530,8 @@ public class Enchantments {
 			case BREACH:
 			case WIND_BURST:
 				return Versions.V1_21;
+			case LUNGE:
+				return Versions.V1_21_11;
 			default:
 				return Versions.V1_8;
 		}
