@@ -15,6 +15,16 @@ public class SimpleRandom {
         return (int)(seed >>> 17);
     }
 
+    // always used
+    public int next8() {
+        return (int)((long)next() >>> 28);
+    }
+
+    // specifically for 15 shelves
+    public int next8plus16() {
+        return (int)((long)next() >>> 28) + (int)((long)next() >>> 27);
+    }
+
     public int nextInt(int bound) {
         int r = next();
         int m = bound - 1;

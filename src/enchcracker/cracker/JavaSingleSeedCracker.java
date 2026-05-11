@@ -64,6 +64,19 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		final int secondEarly = slot2 * 3 / 2;
 		final int secondSubOne = slot2 - 1;
 
+		final int test1 = firstEarly - halfShelves;
+		final int test3 = secondEarly - halfShelves;
+		final boolean[] test2 = new boolean[shelvesPlusOne + 7];
+		final boolean[] test4 = new boolean[shelvesPlusOne + 7];
+		final boolean[] test5 = new boolean[shelvesPlusOne + 7];
+		for (int a = 0; a < shelvesPlusOne + 7; a++) {
+			int v = (a + halfShelves) / 3;
+			test2[a] = ((v < 1 && slot1 != 1) || v != slot1);
+			v = (a + halfShelves) * 2 / 3;
+			test4[a] = v != secondSubOne;
+			test5[a] = Math.max(a + halfShelves, twoShelves) == slot3;
+		}
+
 		seedsSearched.set(0);
 		possibleSeeds.clear();
 
@@ -71,45 +84,69 @@ public class JavaSingleSeedCracker extends AbstractSingleSeedCracker {
 		long startTime = System.nanoTime();
 
 		for (int i = 0; i < threadCount; i++) {
-			Thread t = new Thread(() -> {
-				final int[] myList = new int[1000000];
-				int pos = 0;
-				final SimpleRandom myRNG = new SimpleRandom();
+			Thread t;
+			if (shelvesPlusOne == 16) {
+				t = new Thread(() -> {
+					final int[] myList = new int[1000000];
+					int pos = 0;
+					final SimpleRandom myRNG = new SimpleRandom();
 
-				while (true) {
-					if (abortRequested.get()) return;
+					while (true) {
+						if (abortRequested.get()) return;
 
-					int curSeed = seed.get();
-					final int last = curSeed + blockSize;
-					if (last < curSeed) break; // overflow
-					if (seed.compareAndSet(curSeed, curSeed + blockSize)) {
-						for (; curSeed < last; curSeed++) {
-							myRNG.setSeed(curSeed);
-
-							int ench1r1 = myRNG.nextInt(8) + halfShelves;
-							if (ench1r1 > firstEarly) continue;
-							int ench1 = (ench1r1 + myRNG.nextInt(shelvesPlusOne)) / 3;
-							if (ench1 < 1) { if (slot1 != 1) continue; }
-							if (ench1 != slot1) continue;
-
-							int ench2r1 = myRNG.nextInt(8) + halfShelves;
-							if (ench2r1 > secondEarly) continue;
-							int ench2 = (ench2r1 + myRNG.nextInt(shelvesPlusOne)) * 2 / 3;
-							if (ench2 != secondSubOne) continue;
-
-							int ench3 = (myRNG.nextInt(8) + halfShelves + myRNG.nextInt(shelvesPlusOne));
-							if (Math.max(ench3, twoShelves) != slot3) continue;
-
-							myList[pos++] = curSeed;
-							if (pos == myList.length) {
-								synchronized(possibleSeeds) { possibleSeeds.addAll(myList, myList.length); }
-								pos = 0;
+						int curSeed = seed.get();
+						final int last = curSeed + blockSize;
+						if (last < curSeed) break; // overflow
+						if (seed.compareAndSet(curSeed, curSeed + blockSize)) {
+							for (; curSeed < last; curSeed++) {
+								myRNG.setSeed(curSeed);
+								if (test2[myRNG.next8plus16()]) continue;
+								if (test4[myRNG.next8plus16()]) continue;
+								if (test5[myRNG.next8plus16()]) {
+									myList[pos++] = curSeed;
+									if (pos == myList.length) {
+										synchronized(possibleSeeds) { possibleSeeds.addAll(myList, myList.length); }
+										pos = 0;
+									}
+								}
 							}
 						}
 					}
-				}
-				synchronized(possibleSeeds) { possibleSeeds.addAll(myList, pos); }
-			});
+					synchronized(possibleSeeds) { possibleSeeds.addAll(myList, pos); }
+				});
+			}
+			else {
+				t = new Thread(() -> {
+					final int[] myList = new int[1000000];
+					int pos = 0, v;
+					final SimpleRandom myRNG = new SimpleRandom();
+
+					while (true) {
+						if (abortRequested.get()) return;
+
+						int curSeed = seed.get();
+						final int last = curSeed + blockSize;
+						if (last < curSeed) break; // overflow
+						if (seed.compareAndSet(curSeed, curSeed + blockSize)) {
+							for (; curSeed < last; curSeed++) {
+								myRNG.setSeed(curSeed);
+								v = myRNG.next8();
+								if (v > test1 || test2[v + myRNG.nextInt(shelvesPlusOne)]) continue;
+								v = myRNG.next8();
+								if (v > test3 || test4[v + myRNG.nextInt(shelvesPlusOne)]) continue;
+								if (test5[myRNG.next8() + myRNG.nextInt(shelvesPlusOne)]) {
+									myList[pos++] = curSeed;
+									if (pos == myList.length) {
+										synchronized(possibleSeeds) { possibleSeeds.addAll(myList, myList.length); }
+										pos = 0;
+									}
+								}
+							}
+						}
+					}
+					synchronized(possibleSeeds) { possibleSeeds.addAll(myList, pos); }
+				});
+			}
 			threads.add(t);
 			t.start();
 		}
