@@ -933,7 +933,7 @@ public class EnchCrackerWindow extends StyledFrameMinecraft {
 			} catch (NumberFormatException e) {
 				Log.info("Could not update player level text");
 			}
-			playerSeed.setText(String.format("%12X", curSeed));
+			playerSeed.setText(String.format("%012X", curSeed));
 			timesNeeded = -2;
 			outDrop.setText("-");
 			outBook.setText("-");
